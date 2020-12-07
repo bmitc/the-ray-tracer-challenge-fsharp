@@ -1,0 +1,4 @@
+# Ignore Visual Studio files
+[Bb]in/
+[Oo]bj/
+.vs/

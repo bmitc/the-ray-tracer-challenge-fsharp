@@ -1,0 +1,23 @@
+﻿#load "../Utilities.fs"
+#load "../Tuples.fs"
+#load "../Color.fs"
+#load "../Canvas.fs"
+#load "../PPM.fs"
+#load "../Projectile.fs"
+#load "../Matrix.fs"
+#load "../Transformation.fs"
+#load "../Ray.fs"
+#load "../LightAndShading.fs"
+#load "../Scene.fs"
+
+open RayTracer.Utilities
+open RayTracer.Tuples
+open RayTracer.Color
+open RayTracer.Canvas
+open RayTracer.PPM
+open RayTracer.Projectile
+open RayTracer.Matrix
+open RayTracer.Transformation
+open RayTracer.Ray
+open RayTracer.LightAndShading
+open RayTracer.Scene

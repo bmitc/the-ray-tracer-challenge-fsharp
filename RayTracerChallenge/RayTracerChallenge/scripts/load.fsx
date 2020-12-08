@@ -3,7 +3,6 @@
 #load "../Color.fs"
 #load "../Canvas.fs"
 #load "../PPM.fs"
-#load "../Projectile.fs"
 #load "../Matrix.fs"
 #load "../Transformation.fs"
 #load "../Ray.fs"
@@ -15,7 +14,6 @@ open RayTracer.Tuples
 open RayTracer.Color
 open RayTracer.Canvas
 open RayTracer.PPM
-open RayTracer.Projectile
 open RayTracer.Matrix
 open RayTracer.Transformation
 open RayTracer.Ray

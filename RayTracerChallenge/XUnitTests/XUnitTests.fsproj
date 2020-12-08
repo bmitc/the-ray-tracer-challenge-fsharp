@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Canvas.fs" />
-    <Compile Include="Color.fs" />
     <Compile Include="Tuples.fs" />
+    <Compile Include="Color.fs" />
+    <Compile Include="Canvas.fs" />
     <Compile Include="Matrix.fs" />
     <Compile Include="Transformation.fs" />
     <Compile Include="Ray.fs" />

@@ -26,26 +26,26 @@ type Color = { Red: float; Green: float; Blue: float } with
           Blue  = op c1.Blue c2.Blue }
     
     /// Add a constant to each element of a color
-    static member (+) (a: float, c) = Color.mapElementwise ((+) a) c
+    static member ( + ) (a: float, c) = Color.mapElementwise ((+) a) c
 
     /// Multiply each element of a color by a constant
-    static member (*) (a: float, c) = Color.mapElementwise ((*) a) c
+    static member ( * ) (a: float, c) = Color.mapElementwise ((*) a) c
 
     /// Divide each element of the vector by a constant
-    static member (/) (c, a: float) = Color.mapElementwise (fun x -> x / a) c
+    static member ( / ) (c, a: float) = Color.mapElementwise (fun x -> x / a) c
 
     /// Add two colors
-    static member (+) (c1, c2) = Color.mapPairwise (+) c1 c2
+    static member ( + ) (c1, c2) = Color.mapPairwise (+) c1 c2
 
     /// Subtract two colors
-    static member (-) (c1, c2) = Color.mapPairwise (-) c1 c2
+    static member ( - ) (c1, c2) = Color.mapPairwise (-) c1 c2
 
     /// Multiply two colors, multiplying each element in one color by the corresponding
     /// positional element in the other color
-    static member (*) (c1, c2) = Color.mapPairwise (*) c1 c2
+    static member ( * ) (c1, c2) = Color.mapPairwise (*) c1 c2
 
     /// Negates each color component.
-    static member (~-) (c: Color) = -1.0 * c
+    static member ( ~- ) (c: Color) = -1.0 * c
 
     /// Overrides the Object.Equals method to provide a custom equality compare for Color records
     override x.Equals object =
@@ -72,7 +72,6 @@ type Color = { Red: float; Green: float; Blue: float } with
 
 /// Convenience function for creating a Color record
 let color (r, g, b) = { Red = r; Green = g; Blue = b }
-
 
 // Useful color constants
 let black = color (0.0, 0.0, 0.0)

@@ -5,18 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="scripts\scene.fsx" />
     <None Include="scripts\load.fsx" />
+    <None Include="scripts\projectile.fsx" />
     <None Include="scripts\clock.fsx" />
     <None Include="scripts\circle.fsx" />
     <None Include="scripts\lightAndShading.fsx" />
+    <None Include="scripts\scene.fsx" />
     <Compile Include="Utilities.fs" />
     <Compile Include="Tuples.fs" />
     <Compile Include="Color.fs" />
     <Compile Include="Canvas.fs" />
     <Compile Include="PPM.fs" />
     <Compile Include="Matrix.fs" />
-    <Compile Include="Projectile.fs" />
     <Compile Include="Transformation.fs" />
     <Compile Include="Ray.fs" />
     <Compile Include="LightAndShading.fs" />

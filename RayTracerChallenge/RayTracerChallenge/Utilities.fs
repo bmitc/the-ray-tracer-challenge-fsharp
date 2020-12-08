@@ -18,7 +18,7 @@ let epsilon = 0.00001
 /// See the definition of epsilon to see the resolution of the compare.
 let compareFloat x y = abs(x-y) <= epsilon
 
-/// Rounds the given float to the nearest integer and convert to an int
+/// Rounds the given float to the nearest integer and converts to an int
 let roundToInt x = int (round x)
 
 /// Calculates the reciprocal of the float. If the input is close, to within

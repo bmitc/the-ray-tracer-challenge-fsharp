@@ -31,7 +31,7 @@ type Object = {Shape: Shape; Transform: Transform option; Material: Material opt
 
 let sphere = {Shape = Sphere; Transform = None; Material = None}
 
-type Intersection = { Object : Object; Time : float}
+type Intersection = { Object: Object; Time: float}
 
 let transform transform ray =
     { Origin = applyTransform transform ray.Origin :?> Point;

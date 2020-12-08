@@ -32,26 +32,26 @@ type Vector = { I: float; J: float; K: float } with
     static member mapPairwise op u v = { I = op u.I v.I; J = op u.J v.J; K = op u.K v.K }
     
     /// Add a constant to each element of a vector
-    static member (+) (a: float, v) = Vector.mapElementwise ((+) a) v
+    static member ( + ) (a: float, v) = Vector.mapElementwise ((+) a) v
 
     /// Multiply each element of a vector by a constant
-    static member (*) (a: float, v) = Vector.mapElementwise ((*) a) v
+    static member ( * ) (a: float, v) = Vector.mapElementwise ((*) a) v
 
     /// Divide each element of the vector by a constant
-    static member (/) (v, a: float) = Vector.mapElementwise (fun x -> x / a) v
+    static member ( / ) (v, a: float) = Vector.mapElementwise (fun x -> x / a) v
 
     /// Add two vectors
-    static member (+) (u, v) = Vector.mapPairwise (+) u v
+    static member ( + ) (u, v) = Vector.mapPairwise (+) u v
 
     /// Subtract two vectors
-    static member (-) (u, v) = Vector.mapPairwise (-) u v
+    static member ( - ) (u, v) = Vector.mapPairwise (-) u v
 
     /// Multiply two vectors, multiplying each element in one vector by the corresponding
     /// positional element in the other vector
-    static member (*) (u, v) = Vector.mapPairwise (*) u v
+    static member ( * ) (u, v) = Vector.mapPairwise (*) u v
 
     /// Negate each element of a vector
-    static member (~-) (u: Vector) = -1.0 * u
+    static member ( ~- ) (u: Vector) = -1.0 * u
 
     /// Overrides the Object.Equals method to provide a custom equality compare for Vector records
     override x.Equals object =
@@ -100,33 +100,33 @@ type Point = { X: float; Y: float; Z: float } with
     static member mapPairwise op p q = {X = op p.X q.X; Y = op p.Y q.Y; Z = op p.Z q.Z}
     
     /// Add a constant to each element of a point
-    static member (+) (a: float, p) = Point.mapElementwise ((+) a) p
+    static member ( + ) (a: float, p) = Point.mapElementwise ((+) a) p
 
     /// Multiply each element of a point by a constant
-    static member (*) (a: float, p) = Point.mapElementwise ((*) a) p
+    static member ( * ) (a: float, p) = Point.mapElementwise ((*) a) p
 
     /// Divide each element of the vector by a constant
-    static member (/) (p, a: float) = Point.mapElementwise (fun x -> x / a) p
+    static member ( / ) (p, a: float) = Point.mapElementwise (fun x -> x / a) p
 
     /// Adds a point to a vector
-    static member (+) (p, v: Vector) = { X = p.X + v.I; Y = p.Y + v.J; Z = p.Z + v.K }
+    static member ( + ) (p, v: Vector) = { X = p.X + v.I; Y = p.Y + v.J; Z = p.Z + v.K }
 
     /// Subtracts two points to get a vector that points from q to p
-    static member (-) (p, q) = vector( p.X - q.X, p.Y - q.Y, p.Z - q.Z)
+    static member ( - ) (p, q) = vector( p.X - q.X, p.Y - q.Y, p.Z - q.Z)
 
     /// Subtracts a vector from a point
-    static member (-) (p, v: Vector) = { X = p.X - v.I; Y = p.Y - v.J; Z = p.Z - v.K }
+    static member ( - ) (p, v: Vector) = { X = p.X - v.I; Y = p.Y - v.J; Z = p.Z - v.K }
 
     /// Multiply two points, multiplying each element in one point by the corresponding
     /// positional element in the other point
-    static member (*) (p, q) = Point.mapPairwise (*) p q
+    static member ( * ) (p, q) = Point.mapPairwise (*) p q
 
     /// Divide two points, dividing each element in one point by the corresponding
     /// positional element in the other point
-    static member (/) (p, q) = Point.mapPairwise (/) p q
+    static member ( / ) (p, q) = Point.mapPairwise (/) p q
 
     /// Negate each element of a point
-    static member (~-) (p: Point) = -1.0 * p
+    static member ( ~- ) (p: Point) = -1.0 * p
 
     /// Overrides the Object.Equals method to provide a custom equality compare for Point records
     override x.Equals object =
@@ -159,7 +159,7 @@ type Point = { X: float; Y: float; Z: float } with
         member this.ToTupleArray () = [| this.X; this.Y; this.Z; 1.0 |]
 
 /// Convenience function for creating a Point record
-let point (x,y,z) = { X = x; Y = y; Z = z }
+let point (x, y, z) = { X = x; Y = y; Z = z }
 
 /// Sum all elements of a vector to a single number
 let sumVector v = v.I + v.J + v.K
@@ -175,9 +175,9 @@ let dot = dotProduct
 
 /// Compute the cross product of two vectors
 let crossProduct u v =
-    {I = u.J*v.K - v.J*u.K
-     J = v.I*u.K - u.I*v.K
-     K = u.I*v.J - v.I*u.J}
+    { I = u.J*v.K - v.J*u.K
+      J = v.I*u.K - u.I*v.K
+      K = u.I*v.J - v.I*u.J }
 
 /// Compute the cross product of two vectors
 let cross = crossProduct

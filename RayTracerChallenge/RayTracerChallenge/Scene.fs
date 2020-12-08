@@ -128,6 +128,5 @@ let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
     ray origin direction
 
 let render camera world =
-    let image = canvas(roundToInt (camera.HorizontalSize/1.0<pixels>), roundToInt (camera.VerticalSize/1.0<pixels>))
-    mapxy (fun x y _ -> colorAt world (rayForPixel camera (float x*1.0<pixels>) (float y*1.0<pixels>)))
-          image
+    let image = Canvas(roundToInt (camera.HorizontalSize/1.0<pixels>), roundToInt (camera.VerticalSize/1.0<pixels>))
+    image.UpdatePixels(fun x y _ -> colorAt world (rayForPixel camera (float x*1.0<pixels>) (float y*1.0<pixels>)))

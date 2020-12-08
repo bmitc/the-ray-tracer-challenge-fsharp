@@ -80,7 +80,7 @@ type Matrix(n: int, m: int, elements: float[,]) =
         with get(i, j) = elements.[i, j]
         //and set(a: int, b: int) (value:'T) = internalArray.[a, b] <- value
 
-    member this.GetSlice(rowStart: int option, rowFinish : int option, columnStart: int option, columnFinish : int option) =
+    member this.GetSlice(rowStart: int option, rowFinish: int option, columnStart: int option, columnFinish: int option) =
         let rowStart =
             match rowStart with
             | Some v  -> v

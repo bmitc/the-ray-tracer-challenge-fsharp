@@ -21,6 +21,8 @@ type Canvas(width: int, height: int, initialColor: Color) =
     /// Internal 2D array for the canvas
     let array = Array2D.create height width initialColor
 
+    new(side) = Canvas(side, side, black)
+
     new(width, height) = Canvas(width, height, black)
 
     new(width: float, height: float) = Canvas(roundToInt width, roundToInt height, black)

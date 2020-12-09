@@ -22,7 +22,7 @@ let writeHour h =
     |> translate (center.X, center.Y, center.Z) // translate the clock to the middle of the canvas
     |> (fun p -> (roundToInt p.X, roundToInt p.Y))
 
-let canvas = Canvas(canvasSize, canvasSize)
+let canvas = Canvas(canvasSize)
 
 List.iter (fun hour -> let (x,y) = writeHour hour
                        canvas.[x,y] <- white)

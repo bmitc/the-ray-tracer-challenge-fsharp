@@ -1,6 +1,5 @@
 ﻿#load "load.fsx"
 
-open RayTracer.Utilities
 open RayTracer.Tuples
 open RayTracer.Color
 open RayTracer.Canvas
@@ -32,6 +31,8 @@ let compute x y =
                 lighting m light point eye normal
     | None   -> color(0.0, 0.0, 0.0)
 
+#time
 canvas.UpdatePixels(fun x y _ -> compute (float x) (float y))
+#time
 
 writeToPPM canvas (System.IO.Path.Combine(__SOURCE_DIRECTORY__, "../../../images/lightAndShading.ppm"))

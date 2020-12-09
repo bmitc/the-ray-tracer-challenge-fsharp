@@ -155,8 +155,8 @@ type Matrix(n: int, m: int, elements: float[,]) =
         // Seq.cast is used to cast the 2D arrays to sequences to use higher-order functions
         match object with
         | :? Matrix as m -> Seq.forall2 (fun x y -> compareFloat x y)
-                                         (this.GetElements |> Seq.cast<float>)
-                                         (m.GetElements |> Seq.cast<float>)
+                                        (this.GetElements |> Seq.cast<float>)
+                                        (m.GetElements |> Seq.cast<float>)
         | _ -> false
     
     /// Overrides the Object.GetHashCode method, which is recommended if overriding Object.Equals
@@ -220,8 +220,8 @@ type Matrix(n: int, m: int, elements: float[,]) =
     /// Inverts the matrix
     member this.Invert() =
         let determinant = this.Determinant()
-        let elements = this.GetElements |> Array2D.mapi (fun i j element -> this.Cofactor(i,j) / determinant)
-        Matrix(this.N, this.M, elements |> Seq.cast<float>, ByColumn)
+        let elements = this.GetElements |> Array2D.mapi (fun i j _ -> this.Cofactor(i,j) / determinant)
+        Matrix(this.N, this.M, elements |> Seq.cast<float>, ByColumn) // effectively takes the transpose
 
 /// Multiples a tuple by a matrix and returns a value of the underlying tuple type, such as vector or point
 let matrixTimesTuple (m: Matrix) (tuple: ITuple<'T>) : 'T =

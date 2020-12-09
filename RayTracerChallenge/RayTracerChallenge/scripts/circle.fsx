@@ -26,6 +26,8 @@ let compute x y =
     | Some _ -> color(0.0, 0.5, 1.0)
     | None   -> color(0.0, 0.0, 0.0)
 
+#time
 canvas.UpdatePixels(fun x y _ -> compute (float x) (float y))
+#time
 
 writeToPPM canvas (System.IO.Path.Combine(__SOURCE_DIRECTORY__, "../../../images/circle.ppm"))

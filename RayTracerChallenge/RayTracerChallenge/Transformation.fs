@@ -17,7 +17,7 @@ type Transform =
     | Reflection  of Axis
     | Rotation    of Axis * angle: float<radians>
     | Shearing    of ShearComponent * proportion: float
-    | Combination of Transform list
+    | Combination of Transform list // transforms will be listed left to right but applied right to left
 
 /// Get the matrix that represents the transform
 let rec getTransformMatrix transform =
@@ -42,22 +42,22 @@ let rec getTransformMatrix transform =
                                                    [ 0.0;  1.0;  0.0; 0.0];
                                                    [ 0.0;  0.0; -1.0; 0.0];
                                                    [ 0.0;  0.0;  0.0; 1.0]])
-    | Rotation (X, r)     -> let r = r/(1.0<radians>)
+    | Rotation (X, r)     -> let r = removeRadians r
                              Matrix(4, 4, array2D [[   1.0;    0.0;    0.0; 0.0];
                                                    [   0.0;  cos r; -sin r; 0.0];
                                                    [   0.0;  sin r;  cos r; 0.0];
                                                    [   0.0;    0.0;    0.0; 1.0]])
-    | Rotation (Y, r)     -> let r = r/(1.0<radians>)
+    | Rotation (Y, r)     -> let r = removeRadians r
                              Matrix(4, 4, array2D [[ cos r;    0.0;  sin r; 0.0];
                                                    [   0.0;    1.0;    0.0; 0.0];
                                                    [-sin r;    0.0;  cos r; 0.0];
                                                    [   0.0;    0.0;    0.0; 1.0]])
-    | Rotation (Z, r)     -> let r = r/(1.0<radians>)
+    | Rotation (Z, r)     -> let r = removeRadians r
                              Matrix(4, 4, array2D [[ cos r; -sin r;    0.0; 0.0];
                                                    [ sin r;  cos r;    0.0; 0.0];
                                                    [   0.0;    0.0;    1.0; 0.0];
                                                    [   0.0;    0.0;    0.0; 1.0]])
-    | Shearing (c, p)     -> let (x_y, x_z, y_x, y_z, z_x, z_y) =
+    | Shearing (c, p)     -> let (x_y, x_z, y_x, y_z, z_x, z_y) = // only support a single component being sheared at a time
                                  match c with
                                  | Xy -> (p, 0.0, 0.0, 0.0, 0.0, 0.0)
                                  | Xz -> (0.0, p, 0.0, 0.0, 0.0, 0.0)

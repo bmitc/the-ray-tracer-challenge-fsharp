@@ -73,6 +73,7 @@ type Camera =
       VerticalSize   : float<pixels>;
       FieldOfView    : float<radians>;
       Transform      : Matrix }
+
     with
 
         /// A default camera
@@ -121,8 +122,8 @@ let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
     // Using the camera matrix, transform the cnavas point and the origin,
     // and then compute the ray's direction vector.
     // (Remember that the canvas is at z=-1.)
-    let pixel = applyTransformMatrix (camera.Transform.Invert()) (point(worldX/1.0<world>, worldY/1.0<world>, -1.0)) :?> Point
-    let origin = applyTransformMatrix (camera.Transform.Invert()) (point(0.0, 0.0, 0.0)) :?> Point
+    let pixel = applyTransformMatrix (camera.Transform.Invert()) (point(worldX/1.0<world>, worldY/1.0<world>, -1.0))
+    let origin = applyTransformMatrix (camera.Transform.Invert()) (point(0.0, 0.0, 0.0))
     let direction = normalize(pixel - origin)
 
     ray origin direction

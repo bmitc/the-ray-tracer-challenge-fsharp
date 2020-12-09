@@ -1,16 +1,16 @@
 ﻿module RayTracer.LightAndShading
 
-open RayTracer.Tuples
-open RayTracer.Color
-open RayTracer.Transformation
-open RayTracer.Ray
+open Tuples
+open Color
+open Transformation
+open Ray
 
 let normalAt object worldPoint =
     match object.Transform with
     | None   -> normalize (worldPoint - point(0.0, 0.0, 0.0))
-    | Some t -> let objectPoint = applyTransform (inverse t) worldPoint :?> Point
+    | Some t -> let objectPoint = applyTransform (inverse t) worldPoint
                 let objectNormal = objectPoint - point(0.0, 0.0, 0.0)
-                let worldNormal = applyTransposedTransform (inverse t) objectNormal :?> Vector
+                let worldNormal = applyTransposedTransform (inverse t) objectNormal
                 normalize worldNormal
 
 let reflect vector normal = vector - 2.0 * (dot vector normal) * normal

@@ -1,13 +1,16 @@
 ﻿module RayTracer.Transformation
 
-open RayTracer.Utilities
-open RayTracer.Tuples
-open RayTracer.Matrix
+open Utilities
+open Tuples
+open Matrix
 
+/// Represents one of the axis in 3D space
 type Axis = X | Y | Z
 
+/// Represents a shear component that can be applied in a shear transformation
 type ShearComponent = Xy | Xz | Yx | Yz | Zx | Zy
 
+/// Represents a 3D transform
 type Transform =
     | Translation of x: float * y: float * z: float
     | Scaling     of x: float * y: float * z: float
@@ -16,6 +19,7 @@ type Transform =
     | Shearing    of ShearComponent * proportion: float
     | Combination of Transform list
 
+/// Get the matrix that represents the transform
 let rec getTransformMatrix transform =
     match transform with
     | Translation (x,y,z) -> Matrix(4, 4, array2D [[1.0; 0.0; 0.0; x  ];
@@ -69,6 +73,7 @@ let rec getTransformMatrix transform =
                                           (Matrix(4, 4, Identity))
                                           (List.rev transforms)
 
+/// Invert the transform
 let rec inverse transform =
     match transform with
     | Translation (x, y, z)  -> Translation (-x, -y, -z)
@@ -78,37 +83,34 @@ let rec inverse transform =
     | Shearing (c, p)        -> Shearing (c, -p)
     | Combination transforms -> Combination (transforms |> List.rev |> List.map (fun t -> inverse t))
     
-let getInverseTransformMatrix transform = (getTransformMatrix transform).Invert()
+/// Applies the transform matrix to a vector or point
+let applyTransformMatrix (transformMatrix: Matrix) (tuple: ITuple<'T>) =
+    let tupleMatrix = Matrix(4, 1, tuple.ToTupleArray(), ByColumn) // convert the 4 element tuple array to a single column matrix
+    let result = transformMatrix * tupleMatrix // the result is a single column matrix
+    tuple.FromTupleArray result.[*,0]
 
-let applyTransformMatrix (transformMatrix: Matrix) (tuple: ITuple) =
-    let t = Matrix(4, 1, tuple.ToTupleArray(), ByColumn)
-    let result = transformMatrix * t
-    match tuple with
-    | :? Vector -> vector(result.[0,0], result.[1,0], result.[2,0]) :> ITuple
-    | :? Point  -> point(result.[0,0], result.[1,0], result.[2,0]) :> ITuple
-    | _         -> tuple
-
-/// Applies the given transform to a vector or point. All other ITuple implementations do not transform the tuple.
-let applyTransform transform (tuple : ITuple) =
+/// Applies the transform to a vector or point
+let applyTransform transform (tuple : ITuple<'T>) =
     let matrix = getTransformMatrix transform
     applyTransformMatrix matrix tuple
-
-let applyTransposedTransform transform (tuple : ITuple) =
-    let t = Matrix(4, 1, tuple.ToTupleArray(), ByColumn)
+    
+/// Applies the transpose of the transform to a vector or point
+let applyTransposedTransform transform (tuple : ITuple<'T>) =
     let matrix = getTransformMatrix transform
     let transposedMatrix = matrix.ReplaceSubmatrix(3, 3, matrix.GetSubmatrix(3, 3).Transpose())
-    let result = transposedMatrix * t
-    match tuple with
-    | :? Vector -> vector(result.[0,0], result.[1,0], result.[2,0]) :> ITuple
-    | :? Point  -> point(result.[0,0], result.[1,0], result.[2,0]) :> ITuple
-    | _         -> tuple
+    applyTransformMatrix transposedMatrix tuple
 
+/// Translates a vector or point by (x,y,z)
 let translate (x,y,z) = applyTransform (Translation (x,y,z))
 
+/// Scales a vector or point by (x,y,z) 
 let scale (x,y,z) = applyTransform (Scaling (x,y,z))
 
+/// Reflects a vector or point across the axis
 let reflect axis = applyTransform (Reflection axis)
 
+/// Rotates a vector or point around the axis by the given angle
 let rotate (axis, angle: float<radians>) = applyTransform (Rotation (axis, angle))
 
+/// Shears a vector or point via the shear component by the given proportion
 let shear shearComponent proportion = applyTransform (Shearing (shearComponent, proportion))

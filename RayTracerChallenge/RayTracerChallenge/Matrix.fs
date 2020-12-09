@@ -1,6 +1,6 @@
 ﻿module RayTracer.Matrix
 
-open RayTracer.Utilities
+open Utilities
 
 let create2DarrayByRow n m sequence =
     array2D
@@ -122,23 +122,23 @@ type Matrix(n: int, m: int, elements: float[,]) =
         elements.[rowStart..rowFinish, column]
 
     /// Multiplies two matrices and returns a new matrix
-    static member (*) (m1 : Matrix, m2 : Matrix) =
+    static member (*) (m1: Matrix, m2: Matrix) =
         let newElements = array2D [| for i in 0..m1.N-1 ->
                                         [| for j in 0..m2.M-1 -> dotArray m1.[i,*] m2.[*,j] |] |]
         Matrix(m1.N, m2.M, newElements)
 
     /// Multiplies a matrix by a constant element-wise and returns a new matrix
-    static member (*) (c : float, m : Matrix) =
+    static member (*) (c: float, m: Matrix) =
         Matrix(m.N, m.M, Array2D.map (fun x -> c * x) m.GetElements)
 
     /// Adds two matrices together and returns a new matrix
-    static member (+) (m1 : Matrix, m2 : Matrix) =
+    static member (+) (m1: Matrix, m2: Matrix) =
         let newElements = array2D [| for i in 0..m1.N-1 ->
                                       Array.map2 (fun x y -> x + y) m1.[i,*] m2.[i,*] |]
         Matrix(m1.N, m2.M, newElements)
 
     /// Adds a constant element-wise to a matrix and returns a new matrix
-    static member (+) (c : float, m : Matrix) =
+    static member (+) (c: float, m: Matrix) =
         Matrix(m.N, m.M, Array2D.map (fun x -> c + x) m.GetElements)
 
     /// Overrides the Object.Equals method to provide a custom equality compare for matrices
@@ -170,7 +170,7 @@ type Matrix(n: int, m: int, elements: float[,]) =
                                                       Message = "Determinants are only supported for square matrices." |})
     
     /// Returns the submatrix, as a new matrix, found by removing the given row and column
-    member this.GetSubmatrix(rowToRemove : int, columnToRemove : int) =
+    member this.GetSubmatrix(rowToRemove: int, columnToRemove: int) =
         let newElements = this.GetElements
                           |> Array2D.mapi (fun i j element -> (i, j, element))
                           |> Seq.cast<int*int*float>
@@ -178,7 +178,7 @@ type Matrix(n: int, m: int, elements: float[,]) =
                           |> Seq.map (fun (i,j,element) -> element)
         Matrix(this.N - 1, this.M - 1, newElements, ByRow)
 
-    member this.ReplaceSubmatrix(rowToLeave : int, columnToLeave : int, subMatrix : Matrix) =
+    member this.ReplaceSubmatrix(rowToLeave: int, columnToLeave: int, subMatrix: Matrix) =
         let mutable subMatrixList = subMatrix.GetElements |> Seq.cast<float> |> Seq.toList
         let getNext () =
             match subMatrixList with

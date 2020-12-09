@@ -3,7 +3,7 @@
 open Utilities
 
 /// Interface used to convert 3D tuple-like elements to and from a 4D tuple
-type ITuple =
+type ITuple<'T> =
 
     /// The first element of the tupe-like element
     abstract member X1 : float
@@ -17,7 +17,10 @@ type ITuple =
     /// Converts a 3D tuple-like element to an array of length four consisting of
     /// the three components plus a fourth component. The array is essentially the
     /// homogeneous coordinate representation of the tuple.
-    abstract member ToTupleArray: unit -> float[]
+    abstract member ToTupleArray : unit -> float[]
+
+    /// Creates a 3D tuple-like element from a tuple array
+    abstract member FromTupleArray : float[] -> 'T
 
 /// Represents a 3D vector
 [<CustomEquality; CustomComparison>]
@@ -78,11 +81,12 @@ type Vector = { I: float; J: float; K: float } with
             | _ -> 0
 
     /// Implements the ITuple interface to be treated like a tuple-like element
-    interface ITuple with
+    interface ITuple<Vector> with
         member this.X1 = this.I
         member this.X2 = this.J
         member this.X3 = this.K
         member this.ToTupleArray () = [| this.I; this.J; this.K; 0.0 |]
+        member _.FromTupleArray array = { I = array.[0]; J = array.[1]; K = array.[2] }
 
 /// Convenience function for creating a Vector record
 let vector (i,j,k) = { I = i; J = j; K = k }
@@ -152,11 +156,12 @@ type Point = { X: float; Y: float; Z: float } with
             | _ -> 0
 
     /// Implements the ITuple interface to be treated like a tuple-like element
-    interface ITuple with
+    interface ITuple<Point> with
         member this.X1 = this.X
         member this.X2 = this.Y
         member this.X3 = this.Z
         member this.ToTupleArray () = [| this.X; this.Y; this.Z; 1.0 |]
+        member _.FromTupleArray array = { X = array.[0]; Y = array.[1]; Z = array.[2] }
 
 /// Convenience function for creating a Point record
 let point (x, y, z) = { X = x; Y = y; Z = z }

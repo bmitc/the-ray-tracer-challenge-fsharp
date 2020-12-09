@@ -1,15 +1,15 @@
 ﻿module RayTracer.Ray
 
-open RayTracer.Utilities
-open RayTracer.Tuples
-open RayTracer.Color
-open RayTracer.Transformation
+open Utilities
+open Tuples
+open Color
+open Transformation
 
-type Ray = { Origin : Point; Direction : Vector}
+type Ray = { Origin: Point; Direction: Vector}
 
 let ray origin direction = { Origin = origin; Direction = direction}
 
-let position ray (time : float) = ray.Origin + time * ray.Direction
+let position ray (time: float) = ray.Origin + time * ray.Direction
 
 type Shape = Sphere
 
@@ -34,10 +34,10 @@ let sphere = {Shape = Sphere; Transform = None; Material = None}
 type Intersection = { Object: Object; Time: float}
 
 let transform transform ray =
-    { Origin = applyTransform transform ray.Origin :?> Point;
-      Direction = applyTransform transform ray.Direction :?> Vector}
+    { Origin = applyTransform transform ray.Origin;
+      Direction = applyTransform transform ray.Direction }
 
-let intersect (ray : Ray) (object : Object) =
+let intersect (ray: Ray) (object: Object) =
     let r =
         match object.Transform with
         | Some t -> transform (inverse t) ray

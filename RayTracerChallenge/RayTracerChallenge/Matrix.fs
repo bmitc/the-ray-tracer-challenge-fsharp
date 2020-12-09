@@ -1,30 +1,38 @@
 ﻿module RayTracer.Matrix
 
 open Utilities
+open Tuples
 
+/// Creates an n by m 2D array from a sequence, going by rows first
 let create2DarrayByRow n m sequence =
     array2D
         [| for i in 0..n-1 do
             [| for j in 0..m-1 -> Seq.item (i*m + j) sequence |] |]
-            //array.[i*m .. i*m+n]
 
+/// Creates an n by m 2D array from a sequence, going by columns first
 let create2DarrayByColumn n m sequence =
     array2D
         [| for i in 0..n-1 do
              [| for j in 0..m-1 -> Seq.item (i + j*n) sequence |] |]
 
-let inline dotArray (array1 : 'T[]) (array2 : 'T[]) : 'T =
+/// Compute the dot product of two arrays, which are assumed to be the same length
+let inline dotArray (array1: 'T[]) (array2: 'T[]) : 'T =
     Array.map2 (fun x y -> x * y) array1 array2 |> Array.sum
 
+/// A type to choose whether to create a matrix by row or column first when
+/// creating from a one dimensional sequence
 type MatrixCreationOrder = ByRow | ByColumn
 
+/// Represents special matrix types
 type MatrixType =
     | Constant of float
     | Diagonal of float
     | Identity
 
+/// Used for when performing operations on matrices that require certain dimensional constraints
 exception InvalidDimension of {| Row: int; Column: int; Message: string|}
 
+/// An NxM matrix type
 [<StructuredFormatDisplay("{AsString}")>]
 type Matrix(n: int, m: int, elements: float[,]) =
     new(n, m) = Matrix(n, m, Array2D.zeroCreate<float> n m)
@@ -122,23 +130,23 @@ type Matrix(n: int, m: int, elements: float[,]) =
         elements.[rowStart..rowFinish, column]
 
     /// Multiplies two matrices and returns a new matrix
-    static member (*) (m1: Matrix, m2: Matrix) =
+    static member ( * ) (m1: Matrix, m2: Matrix) =
         let newElements = array2D [| for i in 0..m1.N-1 ->
                                         [| for j in 0..m2.M-1 -> dotArray m1.[i,*] m2.[*,j] |] |]
         Matrix(m1.N, m2.M, newElements)
 
     /// Multiplies a matrix by a constant element-wise and returns a new matrix
-    static member (*) (c: float, m: Matrix) =
+    static member ( * ) (c: float, m: Matrix) =
         Matrix(m.N, m.M, Array2D.map (fun x -> c * x) m.GetElements)
 
     /// Adds two matrices together and returns a new matrix
-    static member (+) (m1: Matrix, m2: Matrix) =
+    static member ( + ) (m1: Matrix, m2: Matrix) =
         let newElements = array2D [| for i in 0..m1.N-1 ->
                                       Array.map2 (fun x y -> x + y) m1.[i,*] m2.[i,*] |]
         Matrix(m1.N, m2.M, newElements)
 
     /// Adds a constant element-wise to a matrix and returns a new matrix
-    static member (+) (c: float, m: Matrix) =
+    static member ( + ) (c: float, m: Matrix) =
         Matrix(m.N, m.M, Array2D.map (fun x -> c + x) m.GetElements)
 
     /// Overrides the Object.Equals method to provide a custom equality compare for matrices
@@ -176,8 +184,14 @@ type Matrix(n: int, m: int, elements: float[,]) =
                           |> Seq.cast<int*int*float>
                           |> Seq.filter (fun (i,j,_) -> (i <> rowToRemove) && (j <> columnToRemove))
                           |> Seq.map (fun (i,j,element) -> element)
+                          // This should be revisited for performance reasons. It was done to be functional.
+                          // One option is to get rid of the Array2D implemention, since it lacks higher-order
+                          // functions that are found in the Seq and Array modules. It is called multiple times
+                          // when computing determinants.
         Matrix(this.N - 1, this.M - 1, newElements, ByRow)
 
+    /// Places the submatrix by leaving the given given row and column. This only applies to
+    /// square submatrices of one dimension less than the matrix.
     member this.ReplaceSubmatrix(rowToLeave: int, columnToLeave: int, subMatrix: Matrix) =
         let mutable subMatrixList = subMatrix.GetElements |> Seq.cast<float> |> Seq.toList
         let getNext () =
@@ -208,3 +222,9 @@ type Matrix(n: int, m: int, elements: float[,]) =
         let determinant = this.Determinant()
         let elements = this.GetElements |> Array2D.mapi (fun i j element -> this.Cofactor(i,j) / determinant)
         Matrix(this.N, this.M, elements |> Seq.cast<float>, ByColumn)
+
+/// Multiples a tuple by a matrix and returns a value of the underlying tuple type, such as vector or point
+let matrixTimesTuple (m: Matrix) (tuple: ITuple<'T>) : 'T =
+    let tupleMatrix = Matrix(4, 1, tuple.ToTupleArray(), ByColumn) // convert the 4 element tuple array to a single column matrix
+    let result = m * tupleMatrix // the result is a single column matrix
+    tuple.FromTupleArray result.[*,0] // return the underlying tuple by converted from the first (and only) column

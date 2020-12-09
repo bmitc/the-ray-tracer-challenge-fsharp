@@ -85,9 +85,7 @@ let rec inverse transform =
     
 /// Applies the transform matrix to a vector or point
 let applyTransformMatrix (transformMatrix: Matrix) (tuple: ITuple<'T>) =
-    let tupleMatrix = Matrix(4, 1, tuple.ToTupleArray(), ByColumn) // convert the 4 element tuple array to a single column matrix
-    let result = transformMatrix * tupleMatrix // the result is a single column matrix
-    tuple.FromTupleArray result.[*,0]
+    matrixTimesTuple transformMatrix tuple
 
 /// Applies the transform to a vector or point
 let applyTransform transform (tuple : ITuple<'T>) =

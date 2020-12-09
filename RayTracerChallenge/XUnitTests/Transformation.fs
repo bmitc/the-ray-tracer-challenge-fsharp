@@ -2,10 +2,14 @@
 
 open Xunit
 open FsUnit.Xunit
-open System
 open RayTracer.Utilities
 open RayTracer.Tuples
 open RayTracer.Transformation
+
+// Note that a slightly different approach was taken than in the book.
+// In the book, transforms are represented purely by matrices. Here, we represent
+// transforms as their own type which can then be represented by matrices and
+// applied to various objects.
 
 [<Fact>]
 let ``Multiplying by a translation matrix`` () =
@@ -35,7 +39,7 @@ let ``A scaling matrix applied to a vector`` () =
     scale (2.0, 3.0, 4.0) p |> should equal (vector(-8.0, 18.0, 32.0))
 
 [<Fact>]
-let ``Multiplying by the inverse of a scaling matrx`` () =
+let ``Multiplying by the inverse of a scaling matrix`` () =
     let transform = Scaling(2.0, 3.0, 4.0)
     let inv = inverse transform
     let v = vector(-4.0, 6.0, 8.0)
@@ -47,12 +51,12 @@ let ``Reflection is scaling by a negative value`` () =
     reflect X p |> should equal (point(-2.0, 3.0, 4.0))
 
 [<Fact>]
-let ``Rotating a point half-quarter around the x axis`` () =
+let ``Rotating a point half-quarter around the x axis`` () = // original test name: "Rotating a point around the x axis"
     let p = point(0.0, 1.0, 0.0)
     rotate (X, pi/4.0) p |> should equal (point(0.0, sqrt(2.0)/2.0, sqrt(2.0)/2.0))
 
 [<Fact>]
-let ``Rotating a point full-quarter around the x axis`` () =
+let ``Rotating a point full-quarter around the x axis`` () = // original test name: "Rotating a point around the x axis"
     let p = point(0.0, 1.0, 0.0)
     rotate (X, pi/2.0) p |> should equal (point(0.0, 0.0, 1.0))
     
@@ -64,22 +68,22 @@ let ``The inverse of an x-rotation rotates in the opposite direction`` () =
     applyTransform inv p |> should equal (point(0.0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0))
 
 [<Fact>]
-let ``Rotating a point half-quarter around the y axis`` () =
+let ``Rotating a point half-quarter around the y axis`` () = // original test name: "Rotating a point around the y axis"
     let p = point(0.0, 0.0, 1.0)
     rotate (Y, pi/4.0) p |> should equal (point(sqrt(2.0)/2.0, 0.0, sqrt(2.0)/2.0))
 
 [<Fact>]
-let ``Rotating a point full-quarter around the y axis`` () =
+let ``Rotating a point full-quarter around the y axis`` () = // original test name: "Rotating a point around the y axis"
     let p = point(0.0, 0.0, 1.0)
     rotate (Y, pi/2.0) p |> should equal (point(1.0, 0.0, 0.0))
 
 [<Fact>]
-let ``Rotating a point half-quarter around the z axis`` () =
+let ``Rotating a point half-quarter around the z axis`` () = // original test name: "Rotating a point around the z axis"
     let p = point(0.0, 1.0, 0.0)
     rotate (Z, pi/4.0) p |> should equal (point(-sqrt(2.0)/2.0, sqrt(2.0)/2.0, 0.0))
 
 [<Fact>]
-let ``Rotating a point full-quarter around the z axis`` () =
+let ``Rotating a point full-quarter around the z axis`` () = // original test name: "Rotating a point around the z axis"
     let p = point(0.0, 1.0, 0.0)
     rotate (Z, pi/2.0) p |> should equal (point(-1.0, 0.0, 0.0))
 

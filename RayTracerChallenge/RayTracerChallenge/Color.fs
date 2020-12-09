@@ -80,7 +80,7 @@ let red   = color (1.0, 0.0, 0.0)
 let green = color (0.0, 1.0, 1.0)
 let blue  = color (0.0, 0.0, 1.0)
 
-/// Computes the Hadamard (or Schur) product of the color
+/// Computes the Hadamard (or Schur) product of the colors
 let hadamardProduct c1 c2 =
     { Red   = c1.Red   * c2.Red;
       Green = c1.Green * c2.Green

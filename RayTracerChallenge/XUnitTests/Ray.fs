@@ -55,6 +55,9 @@ let ``An intersection encapsulates t and object`` () =
     let i = {Object = s; Time = 3.5}
     (i.Object, i.Time) |> should equal (s, 3.5)
 
+// "Aggregating intersections"
+// This is not implemented since aggregations of intersections are treated as lists of intersections.
+
 [<Fact>]
 let ``Intersect sets the object on the intersection`` () =
     let r = ray (point(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
@@ -118,8 +121,11 @@ let ``Intersecting a translated sphere with a ray`` () =
     let xs = intersect r s
     xs |> should be Empty
 
+//*******************************
 // Additional tests
+//*******************************
 
+// The book does not cover this case, which was found while developing.
 [<Fact>]
 let ``Intersecting a translated sphere with a zero ray`` () =
     let r = ray (point(0.0, 0.0, 0.0)) (vector(0.0, 0.0, 0.0))

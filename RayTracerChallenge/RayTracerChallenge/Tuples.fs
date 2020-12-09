@@ -2,6 +2,13 @@
 
 open Utilities
 
+// Tuples are intentionally separated out into separate types of Vector and Point.
+// This is because they are distinctilly two different types with enough variation
+// that they don't belong as a single type. The ITuple interface provides shared
+// behavior, that primarily allows Vector and Point to be transformed with matrices.
+// There is a small hit in duplicated code, but this duplication is small and contained
+// whereas the correct type design pays off in the overall design of the ray tracer.
+
 /// Interface used to convert 3D tuple-like elements to and from a 4D tuple
 type ITuple<'T> =
 

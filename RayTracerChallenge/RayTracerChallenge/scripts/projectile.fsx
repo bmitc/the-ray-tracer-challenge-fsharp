@@ -1,10 +1,12 @@
-﻿#load "load.fsx"
+﻿// Implementation of the putting it together at the end of Chapter 2
+
+#load "load.fsx"
 
 open RayTracer.Utilities
 open RayTracer.Tuples
+open RayTracer.Color
 open RayTracer.Canvas
 open RayTracer.PPM
-open RayTracer.Color
 
 type Projectile = { Position: Point; Velocity: Vector }
 
@@ -29,4 +31,7 @@ let run environment initialPosition (canvas: Canvas) filePath =
         canvas.[roundToInt position.Position.X, canvas.Height - (roundToInt position.Position.Y)] <- green
     writeToPPM canvas filePath
 
-run initialEnvironment initialPosition (Canvas(900, 550)) (System.IO.Path.Combine(__SOURCE_DIRECTORY__, "../../../images/projectile.ppm"))
+run initialEnvironment
+    initialPosition
+    (Canvas(900, 550))
+    (System.IO.Path.Combine(__SOURCE_DIRECTORY__, "../../../images/projectile.ppm"))

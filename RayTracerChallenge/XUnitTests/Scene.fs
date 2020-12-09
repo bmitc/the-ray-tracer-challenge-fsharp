@@ -5,7 +5,6 @@ open FsUnit.Xunit
 open RayTracer.Utilities
 open RayTracer.Tuples
 open RayTracer.Color
-open RayTracer.Canvas
 open RayTracer.Matrix
 open RayTracer.Transformation
 open RayTracer.Ray

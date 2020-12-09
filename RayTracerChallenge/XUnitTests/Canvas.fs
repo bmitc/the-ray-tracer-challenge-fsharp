@@ -19,8 +19,8 @@ let ``Writing pixels to a canvas`` () =
 
 [<Fact>]
 let ``Constructing the PPM header`` () =
-    let c = Canvas(5, 3)
     createHeader 5 3 255.0 |> should equal "P3\n5 3\n255"
+    // The PPM functions are implemented more granular than in the book
 
 [<Fact>]
 let ``Constructing the PPM pixel data`` () =

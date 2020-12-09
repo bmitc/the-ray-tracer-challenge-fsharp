@@ -2,6 +2,7 @@
 
 open Xunit
 open FsUnit.Xunit
+open RayTracer.Tuples
 open RayTracer.Matrix
 
 [<Fact>]
@@ -23,31 +24,41 @@ let ``A 3x3 matrix ought to be representable`` () =
 [<Fact>]
 let ``Matrix equality with identical matrices`` () =
     // Note that this also notionally tests different construction methods
-    let m1 = Matrix(4, 4, [1.000001;2.;3.;4.;5.;6.;7.;8.;9.;8.;7.;6.;5.;4.;3.;2.], ByRow)
-    let m2 = Matrix(4, 4, array2D [[1.;2.;3.;4.]; [5.;6.;7.;8.]; [9.;8.;7.;6.]; [5.;4.;3.;2.]])
-    m1 |> should equal m2
+    let a = Matrix(4, 4, [1.000001;2.;3.;4.;5.;6.;7.;8.;9.;8.;7.;6.;5.;4.;3.;2.], ByRow)
+    let b = Matrix(4, 4, array2D [[1.;2.;3.;4.]; [5.;6.;7.;8.]; [9.;8.;7.;6.]; [5.;4.;3.;2.]])
+    a |> should equal b
     // Since the Matrix class overrides Object.Equals, this uses the custom compare defined
     // by the override. This is tested by the addition of 1.000001 in the [0,0] position of m1.
 
 [<Fact>]
 let ``Matrix equality with different matrices`` () =
     // Note that this also notionally tests different construction methods
-    let m1 = Matrix(4, 4, [|1.;2.;3.;4.;5.;6.;7.;8.;9.;8.;7.;6.;5.;4.;3.;2.|], ByRow)
-    let m2 = Matrix(4, 4, array2D [[2.;3.;4.;5.]; [6.;7.;8.;9.]; [8.;7.;6.;5.]; [4.;3.;2.;1.]])
-    m1 |> should not' (equal m2)
+    let a = Matrix(4, 4, [|1;2;3;4;5;6;7;8;9;8;7;6;5;4;3;2|], ByRow)
+    let b = Matrix(4, 4, array2D [[2.;3.;4.;5.]; [6.;7.;8.;9.]; [8.;7.;6.;5.]; [4.;3.;2.;1.]])
+    a |> should not' (equal b)
 
 [<Fact>]
 let ``Multiplying two matrices`` () =
-    let m1 = Matrix(4, 4, [1.;2.;3.;4.;5.;6.;7.;8.;9.;8.;7.;6.;5.;4.;3.;2.], ByRow)
-    let m2 = Matrix(4, 4, [-2.;1.;2.;3.;3.;2.;1.;-1.;4.;3.;6.;5.;1.;2.;7.;8.], ByRow)
+    let a = Matrix(4, 4, [1;2;3;4;5;6;7;8;9;8;7;6;5;4;3;2], ByRow)
+    let b = Matrix(4, 4, [-2;1;2;3;3;2;1;-1;4;3;6;5;1;2;7;8], ByRow)
     let expectedResult = Matrix(4, 4, [20.;22.;50.;48.;44.;54.;114.;108.;40.;58.;110.;102.;16.;26.;46.;42.], ByRow)
-    m1 * m2 |> should equal expectedResult
+    a * b |> should equal expectedResult
+
+[<Fact>]
+let ``A matrix multipled by a tuple`` () =
+    let a = Matrix(4, 4, [1;2;3;4;2;4;4;2;8;6;4;1;0;0;0;1], ByRow)
+    let b = point(1.0, 2.0, 3.0)
+    matrixTimesTuple a b |> should equal (point(18.0, 24.0, 33.0))
 
 [<Fact>]
 let ``Multiplying a matrix by the identity matrix`` () =
-    let m = Matrix(4, 4, [0.;1.;2.;4.;1.;2.;4.;8.;2.;4.;8.;16.;4.;8.;16.;32.], ByRow)
-    let id = Matrix(4, 4, Identity)
-    m * id |> should equal m
+    let a = Matrix(4, 4, [0;1;2;4;1;2;4;8;2;4;8;16;4;8;16;32], ByRow)
+    a * Matrix(4, 4, Identity) |> should equal a
+
+[<Fact>]
+let ``Multiplying the identity matrix by a tuple`` () =
+    let a = point(1.0, 2.0, 3.0)
+    matrixTimesTuple (Matrix(4, 4, Identity)) a |> should equal a
 
 [<Fact>]
 let ``Transposing a matrix`` () =
@@ -149,7 +160,9 @@ let ``Multiplying a product by its inverse`` () =
     let C = A * B
     C * B.Invert() |> should equal A
 
+//*******************************
 // Additional tests
+//*******************************
 
 [<Fact>]
 let ``Replacing a submatrix at (1,1)`` () =

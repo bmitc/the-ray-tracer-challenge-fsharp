@@ -3,23 +3,20 @@
 open Utilities
 open Color
 
+/// Given a 2D array's width, converts a 1D array index to a 2D array (x,y) index
+let inline convert1DIndexTo2DIndex index width = (index % width, index / width)
+
+/// Given a 2D array's width, converts a 2D array (x,y) index to a 1D array index
+let inline convert2DIndexTo1DIndex x y width = x + y * width
+
 /// Represents a 2D canvas of (x,y) pixels consisting of colors, where the origin (0,0) is at the top left,
 // x increases to the right, and y increases down.
 type Canvas(width: int, height: int, initialColor: Color) =
-    (* To clarify the relationship between the width and height of a canvas and the dimensions
-       of an array, note the following output from Array2D.create, which creates an array of
-       the given dimensions.
-       Array2D.create 2 3 0;;
-       val it : int [,] = [[0; 0; 0]
-                           [0; 0; 0]]
-       Here, we consider 2 to be the height, or number of rows, and 3 to be the width, or
-       number of columns. For dimensions of 2D arrays we have Array.length1, which will return
-       the height (the first dimension) and Array2D.length2, which will return the width (the
-       second dimension).
-       *)
-
-    /// Internal 2D array for the canvas
-    let array = Array2D.create height width initialColor
+    /// Internal 1D array for the canvas.
+    /// A 1D array is used instead of a 2D array, which was the original implementation, to get
+    /// access to better higher-order functions in the Array module and to take advantage of
+    /// the parallelized functions in the Array.Parallel module.
+    let array = Array.create (width * height) initialColor
 
     new(side) = Canvas(side, side, black)
 
@@ -47,10 +44,10 @@ type Canvas(width: int, height: int, initialColor: Color) =
     /// and c.[x,y] <- color sets the (x,y)-coordinate to the given color. The latter
     /// mutates the canvas.
     member _.Item
-        with get(x, y) = array.[y, x]
-        and  set(x, y) color = array.[y, x] <- color
+        with get(x, y) = array.[convert2DIndexTo1DIndex x y width]
+        and  set(x, y) color = array.[convert2DIndexTo1DIndex x y width] <- color
 
-    member this.GetSlice(xStart: int option, xFinish: int option, yStart: int option, yFinish: int option) =
+    member _.GetSlice(xStart: int option, xFinish: int option, yStart: int option, yFinish: int option) =
         let xStart =
             match xStart with
             | Some v  -> v
@@ -58,7 +55,7 @@ type Canvas(width: int, height: int, initialColor: Color) =
         let xFinish =
             match xFinish with
             | Some v  -> v
-            | None    -> this.Width - 1
+            | None    -> width - 1
         let yStart =
             match yStart with
             | Some v  -> v
@@ -66,10 +63,12 @@ type Canvas(width: int, height: int, initialColor: Color) =
         let yFinish =
             match yFinish with
             | Some v  -> v
-            | None    -> this.Height - 1
-        array.[yStart..yFinish, xStart..xFinish] // Note that x and y are swapped when dealing directly with arrays
+            | None    -> height - 1
+        let start = convert2DIndexTo1DIndex xStart yStart width
+        let finish = convert2DIndexTo1DIndex xFinish yFinish width
+        array.[start..finish]
 
-    member this.GetSlice(x: int, yStart: int option, yFinish: int option) =
+    member _.GetSlice(x: int, yStart: int option, yFinish: int option) =
         let yStart =
             match yStart with
             | Some v  -> v
@@ -77,24 +76,29 @@ type Canvas(width: int, height: int, initialColor: Color) =
         let yFinish =
             match yFinish with
             | Some v  -> v
-            | None    -> this.Height - 1
-        array.[yStart..yFinish, x] // Note that x and y are swapped when dealing directly with arrays
+            | None    -> height - 1
+        let start = convert2DIndexTo1DIndex x yStart width
+        let finish = convert2DIndexTo1DIndex x yFinish width
+        array.[start..finish]
 
-    member this.GetSlice(xStart: int option, xFinish: int option, y: int) =
+    member _.GetSlice(xStart: int option, xFinish: int option, y: int) =
         let xStart =
             match xStart with
             | Some v  -> v
             | None    -> 0
-        let yFinish =
+        let xFinish =
             match xFinish with
             | Some v  -> v
-            | None    -> this.Width - 1
-        array.[y, xStart..yFinish] // Note that x and y are swapped when dealing directly with arrays
+            | None    -> width - 1
+        let start = convert2DIndexTo1DIndex xStart y width
+        let finish = convert2DIndexTo1DIndex xFinish y width
+        array.[start..finish]
 
-    /// Updates the canvas' pixels (via mutation) according to the given function.
+    /// Updates the canvas' pixels (via mutation and in parallel) according to the given function.
     member this.UpdatePixels (f: int -> int -> Color -> Color) =
         // Note that iteri and array's first dimension is the row and second dimension is the column.
         // Thus, we need to swap those dimensions when thinking about (x,y) coordinates.
         // The function f processes (x,y) coordinates, and when we interact with arrays, these are swapped.
-        Array2D.iteri (fun y x color -> (array.[y, x] <- f x y color)) array
+        Array.Parallel.iteri (fun i color -> let (x, y) = convert1DIndexTo2DIndex i width
+                                             (this.[x, y] <- f x y color)) array
         this

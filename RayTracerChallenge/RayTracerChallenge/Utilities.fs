@@ -30,3 +30,9 @@ let reciprocal x =
 
 /// An active pattern for matching an integer to know when it's odd or even
 let (|Even|Odd|) input = if input % 2 = 0 then Even else Odd
+
+/// Given a 2D array's width, converts a 1D array index to a 2D array (x,y) index
+let inline convert1DIndexTo2DIndex index width = (index % width, index / width)
+
+/// Given a 2D array's width, converts a 2D array (x,y) index to a 1D array index
+let inline convert2DIndexTo1DIndex x y width = x + y * width

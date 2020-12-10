@@ -3,12 +3,6 @@
 open Utilities
 open Color
 
-/// Given a 2D array's width, converts a 1D array index to a 2D array (x,y) index
-let inline convert1DIndexTo2DIndex index width = (index % width, index / width)
-
-/// Given a 2D array's width, converts a 2D array (x,y) index to a 1D array index
-let inline convert2DIndexTo1DIndex x y width = x + y * width
-
 /// Represents a 2D canvas of (x,y) pixels consisting of colors, where the origin (0,0) is at the top left,
 // x increases to the right, and y increases down.
 type Canvas(width: int, height: int, initialColor: Color) =

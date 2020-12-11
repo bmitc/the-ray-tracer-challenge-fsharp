@@ -15,7 +15,7 @@ let normalAt object worldPoint =
 
 let reflect vector normal = vector - 2.0 * (dot vector normal) * normal
 
-type Light = { Position : Point; Intensity : Color }
+type Light = { Position: Point; Intensity: Color }
 
 let lighting material light point eyev normalv =
     let effectiveColor = material.Color * light.Intensity

@@ -30,7 +30,7 @@ type MatrixType =
     | Identity
 
 /// Used for when performing operations on matrices that require certain dimensional constraints
-exception InvalidDimension of {| Row: int; Column: int; Message: string|}
+exception InvalidDimension of {| Row: int; Column: int; Message: string |}
 
 /// An NxM matrix type
 [<StructuredFormatDisplay("{AsString}")>]

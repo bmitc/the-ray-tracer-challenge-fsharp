@@ -17,7 +17,7 @@ let intersectWorld world ray =
     world.Objects
     |> List.map (intersect ray)
     |> List.concat
-    |> List.sortBy (fun x -> x.Time)
+    |> sort
 
 type Computation =
     { Time   : float;
@@ -69,18 +69,18 @@ let viewTransform from toward up =
     orientation * translationMatrix
 
 type Camera =
-    { HorizontalSize : float<pixels>;
-      VerticalSize   : float<pixels>;
-      FieldOfView    : float<radians>;
+    { HorizontalSize : float<pixels>
+      VerticalSize   : float<pixels>
+      FieldOfView    : float<radians>
       Transform      : Matrix }
 
     with
 
         /// A default camera
         static member Default =
-            { HorizontalSize = 0.0<pixels>;
-              VerticalSize   = 0.0<pixels>;
-              FieldOfView    = 0.0<radians>;
+            { HorizontalSize = 0.0<pixels>
+              VerticalSize   = 0.0<pixels>
+              FieldOfView    = 0.0<radians>
               Transform      = Matrix(4, 4, Identity) }
 
         /// A value used to compute the HalfWidth and HalfHeight of the camera's canvas
@@ -119,11 +119,12 @@ let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
     let worldX = camera.HalfWidth - xOffset
     let worldY = camera.HalfHeight - yOffset
 
-    // Using the camera matrix, transform the cnavas point and the origin,
+    // Using the camera matrix, transform the canvas point and the origin,
     // and then compute the ray's direction vector.
     // (Remember that the canvas is at z=-1.)
-    let pixel = applyTransformMatrix (camera.Transform.Invert()) (point(worldX/1.0<world>, worldY/1.0<world>, -1.0))
-    let origin = applyTransformMatrix (camera.Transform.Invert()) (point(0.0, 0.0, 0.0))
+    let transformMatrix = camera.Transform.Invert()
+    let pixel = applyTransformMatrix transformMatrix (point(worldX/1.0<world>, worldY/1.0<world>, -1.0))
+    let origin = applyTransformMatrix transformMatrix (point(0.0, 0.0, 0.0))
     let direction = normalize(pixel - origin)
 
     ray origin direction

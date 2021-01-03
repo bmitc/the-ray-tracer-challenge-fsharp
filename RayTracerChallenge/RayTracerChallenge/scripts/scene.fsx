@@ -1,4 +1,6 @@
-﻿#load "load.fsx"
+﻿// Implementation of the putting it together at the end of Chapter 7
+
+#load "load.fsx"
 
 open RayTracer.Utilities
 open RayTracer.Tuples

@@ -1,5 +1,5 @@
 # The Ray Tracer Challenge in F#
-This repository is an F# implementations of the ray tracer found in The Ray Tracer Challenge book by Jamis Buck. [Tests](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/tree/main/RayTracerChallenge/XUnitTests) are fully impelemented, and due to F#'s clean syntax and domain modeling, the tests are nearly identical at moments to the psuedocode used to specify the tests in the book. It's been a pleasure to write this code in F#.
+This repository is an F# implementations of the ray tracer found in The Ray Tracer Challenge book by Jamis Buck. [Tests](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/tree/main/RayTracerChallenge/XUnitTests) are fully implemented, and due to F#'s clean syntax and domain modeling, the tests are nearly identical at moments to the psuedocode used to specify the tests in the book. It's been a pleasure to write this code in F#.
 
 Below you'll find code exerpts that generate the displayed image, and these are the examples found in the various chapters of the book. The ray tracer implementation is not yet complete but is fully working through chapter 7 (scenes). Some time is being spent documenting the code and doing some low-hanging performance characterization and enhancements.
 

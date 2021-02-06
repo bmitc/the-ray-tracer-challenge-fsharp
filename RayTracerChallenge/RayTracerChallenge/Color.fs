@@ -77,7 +77,7 @@ let color (r, g, b) = { Red = r; Green = g; Blue = b }
 let black = color (0.0, 0.0, 0.0)
 let white = color (1.0, 1.0, 1.0)
 let red   = color (1.0, 0.0, 0.0)
-let green = color (0.0, 1.0, 1.0)
+let green = color (0.0, 1.0, 0.0)
 let blue  = color (0.0, 0.0, 1.0)
 
 /// Computes the Hadamard (or Schur) product of the colors

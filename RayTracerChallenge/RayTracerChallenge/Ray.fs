@@ -18,29 +18,35 @@ let position ray (time: float) = ray.Origin + time * ray.Direction
 type Shape = Sphere
 
 /// A record to hold various material properties
-type Material = { Color     : Color;
-                  Ambient   : float;
-                  Diffuse   : float;
-                  Specular  : float;
-                  Shininess : float }
+type Material =
+    { Color     : Color
+      Ambient   : float
+      Diffuse   : float
+      Specular  : float
+      Shininess : float }
     with
-        static member Default = { Color     = color(1.0, 1.0, 1.0);
-                                  Ambient   = 0.1;
-                                  Diffuse   = 0.9;
-                                  Specular  = 0.9;
+        static member Default = { Color     = color(1.0, 1.0, 1.0)
+                                  Ambient   = 0.1
+                                  Diffuse   = 0.9
+                                  Specular  = 0.9
                                   Shininess = 200.0 }
 
 /// Convenience function for creating a default material
 let material () = Material.Default
 
 /// An object is a shape with a possible transform and material assigned to it
-type Object = {Shape: Shape; Transform: Transform option; Material: Material option}
+type Object =
+    { Shape     : Shape
+      Transform : Transform option
+      Material  : Material option }
 
 /// Convenience function for creating a sphere object
 let sphere = {Shape = Sphere; Transform = None; Material = None}
 
 /// An intersection consists of what object was intersected and at what time along a ray
-type Intersection = { Object: Object; Time: float}
+type Intersection =
+    { Object : Object
+      Time   : float }
 
 /// Transforms a ray by transforming the underlying origin point and direction vector
 let transform transform ray =

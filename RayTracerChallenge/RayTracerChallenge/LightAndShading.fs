@@ -5,18 +5,25 @@ open Color
 open Transformation
 open Ray
 
+/// Calculates the surface normal of the object's shape, applying the object's transform
+/// if it contains one, at the given world point
 let normalAt object worldPoint =
     match object.Transform with
-    | None   -> normalize (worldPoint - point(0.0, 0.0, 0.0))
-    | Some t -> let objectPoint = applyTransform (inverse t) worldPoint
-                let objectNormal = objectPoint - point(0.0, 0.0, 0.0)
-                let worldNormal = applyTransposedTransform (inverse t) objectNormal
-                normalize worldNormal
+    | None   -> normalize (worldPoint - point(0.0, 0.0, 0.0))                       // the object is located at the origin
+    | Some t -> let objectPoint = applyTransform (inverse t) worldPoint             // convert from world space to object space
+                let objectNormal = objectPoint - point(0.0, 0.0, 0.0)               // compute the normal in object space
+                let worldNormal = applyTransposedTransform (inverse t) objectNormal // convert back to world space
+                normalize worldNormal                                               // return the normal normalized
 
+/// Calculates the reflection of the vector across the normal vector
 let reflect vector normal = vector - 2.0 * (dot vector normal) * normal
 
-type Light = { Position: Point; Intensity: Color }
+/// Represents a light source at a point and with an intensity
+type Light =
+    { Position  : Point
+      Intensity : Color }
 
+/// Calculates a color according to the Phong reflection model
 let lighting material light point eyev normalv =
     let effectiveColor = material.Color * light.Intensity
     let lightv = normalize(light.Position - point)

@@ -31,7 +31,7 @@ let ``Subtracting two points`` () =
 
 [<Fact>]
 let ``Subtracting a vector from a point`` () =
-    point(3.0, 2.0, 1.0) - vector(5.0, 6.0, 7.0) |> should equal (point(-2.0, -4.0, -6.))
+    point(3.0, 2.0, 1.0) - vector(5.0, 6.0, 7.0) |> should equal (point(-2.0, -4.0, -6.0))
 
 [<Fact>]
 let ``Subtracting two vectors`` () =

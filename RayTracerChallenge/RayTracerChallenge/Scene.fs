@@ -9,10 +9,12 @@ open Transformation
 open Ray
 open LightAndShading
 
+/// Represents a world, consisting of objects and a light source
 type World =
     { Objects     : Object list;
-      LightSource : Light}
+      LightSource : Light }
 
+/// Intersects the ray with all the objects in the world, returning an intersection list 
 let intersectWorld world ray =
     world.Objects
     |> List.map (intersect ray)
@@ -27,7 +29,7 @@ type Computation =
       Normal : Vector;
       Inside : bool}
 
-let prepareComputation (intersection : Intersection) ray =
+let prepareComputation (intersection: Intersection) ray =
     let time = intersection.Time
     let object = intersection.Object
     let point = position ray time

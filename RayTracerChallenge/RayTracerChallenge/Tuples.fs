@@ -34,7 +34,7 @@ type ITuple<'T> =
 type Vector = { I: float; J: float; K: float } with
 
     /// Maps the operation to each element of the vector
-    static member mapElementwise op u = {I = op u.I; J = op u.J; K = op u.K}
+    static member mapElementwise op v = {I = op v.I; J = op v.J; K = op v.K}
 
     /// Maps the operation pairwise across two vectors.
     /// For example, mapPaiwise (+) u v = {I = u.I + v.I; J = u.J + v.J; K = u.K + v.K},

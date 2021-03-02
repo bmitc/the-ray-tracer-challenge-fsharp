@@ -11,7 +11,7 @@ type Ray = { Origin: Point; Direction: Vector}
 /// Convience function for creating a ray record
 let ray origin direction = { Origin = origin; Direction = direction}
 
-/// Calculates the position at the given time for the ray by parameterizing the ray
+/// Calculates the position along a ray at the given time by parameterizing the ray
 let position ray (time: float) = ray.Origin + time * ray.Direction
 
 /// Represents various types of shapes to be ray traced

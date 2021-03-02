@@ -11,6 +11,9 @@ open RayTracer.Ray
 open RayTracer.LightAndShading
 open RayTracer.Scene
 
+// "Creating a world"
+// This test is not implemented.
+
 [<Fact>]
 let ``The default world`` () =
     let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}

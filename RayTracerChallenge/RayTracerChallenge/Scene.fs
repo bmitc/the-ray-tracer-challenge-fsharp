@@ -21,14 +21,17 @@ let intersectWorld world ray =
     |> List.concat
     |> sort
 
+/// Represents precomputated values of an intersection, capturing the time and
+/// object of the intersection
 type Computation =
-    { Time   : float;
-      Object : Object;
-      Point  : Point;
-      Eye    : Vector;
-      Normal : Vector;
-      Inside : bool}
+    { Time   : float;  // time of the intersection
+      Object : Object; // the intersection object
+      Point  : Point;  // the point, in world space, where the intersection occurred
+      Eye    : Vector; // vector pointing back towards the camera, or eye
+      Normal : Vector; // normal at the intersection point and object's surface
+      Inside : bool }  // describes if a hit occurs on the inside of the object's shape
 
+/// Prepares a Computation relating to the intersection
 let prepareComputation (intersection: Intersection) ray =
     let time = intersection.Time
     let object = intersection.Object
@@ -43,6 +46,7 @@ let prepareComputation (intersection: Intersection) ray =
       Normal = if d < 0.0 then -normal else normal;
       Inside = d < 0.0}
 
+/// Shades the world at a given intersection
 let shadeHit world computation =
     let material =
         match computation.Object.Material with
@@ -54,6 +58,9 @@ let shadeHit world computation =
              computation.Eye
              computation.Normal
 
+/// Computes the color at the first intersection, if any, of the ray
+/// with an object in the world. In the event of no intersection,
+/// black is returned.
 let colorAt world ray =
     match hit(intersectWorld world ray) with
     | Some i -> prepareComputation i ray |> shadeHit world

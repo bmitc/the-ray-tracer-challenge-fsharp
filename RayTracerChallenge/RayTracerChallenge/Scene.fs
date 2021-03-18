@@ -77,9 +77,10 @@ let viewTransform from toward up =
     let translationMatrix = getTransformMatrix (Translation(-from.X, -from.Y, -from.Z))
     orientation * translationMatrix
 
+/// Represents a camera as a canvas one pixel in front of the camera
 type Camera =
     { HorizontalSize : float<pixels>
-      VerticalSize   : float<pixels>
+      VerticalSize   : float<pixels> 
       FieldOfView    : float<radians>
       Transform      : Matrix }
 
@@ -93,31 +94,36 @@ type Camera =
               Transform      = Matrix(4, 4, Identity) }
 
         /// A value used to compute the HalfWidth and HalfHeight of the camera's canvas
-        member private this.HalfView = tan(removeRadians(this.FieldOfView) / 2.0)
+        /// It is the width of half of the canvas one pixel unit away from the camera
+        member private this.HalfView = tan(removeRadians(this.FieldOfView) / 2.0) * 1.0<pixels>
 
         /// The aspect ratio, the horizontal size over the vertical size, of the camera
         member private this.AspectRatio = this.HorizontalSize / this.VerticalSize
 
-        /// Half of the width of the camera's canvas
+        /// 
         member this.HalfWidth =
             if this.AspectRatio >= 1.0
-            then this.HalfView * 1.0<world>
-            else this.HalfView * this.AspectRatio * 1.0<world>
+            then this.HalfView
+            else this.HalfView * this.AspectRatio
 
-        /// Half of the height of the camera's canvas
+        /// 
         member this.HalfHeight =
             if this.AspectRatio >= 1.0
-            then this.HalfView / this.AspectRatio * 1.0<world>
-            else this.HalfView * 1.0<world>
+            then this.HalfView / this.AspectRatio
+            else this.HalfView
 
-        /// The size of pixels in world space
+        /// The size of a canvas pixel in world coordinates 
         member this.PixelSize = (this.HalfWidth * 2.0) / this.HorizontalSize
+        // Pixels are square, so only need to use horizontal or vertical values
 
+/// Convenience function for creating a camera with a default view transform
 let camera (horizontalPixels, verticalPixels, fieldOfView) =
     { Camera.Default with HorizontalSize = horizontalPixels;
                           VerticalSize   = verticalPixels;
                           FieldOfView    = fieldOfView }
 
+/// Ray that emanates from the camera and passes through the (x,y) pixel on
+/// the camera's canvas
 let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
     // The offset from the edge of the canvas to the pixel's center
     let xOffset = (x + 0.5<pixels>) * camera.PixelSize
@@ -132,7 +138,7 @@ let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
     // and then compute the ray's direction vector.
     // (Remember that the canvas is at z=-1.)
     let transformMatrix = camera.Transform.Invert()
-    let pixel = applyTransformMatrix transformMatrix (point(worldX/1.0<world>, worldY/1.0<world>, -1.0))
+    let pixel = applyTransformMatrix transformMatrix (point(removeUnits worldX, removeUnits worldY, -1.0))
     let origin = applyTransformMatrix transformMatrix (point(0.0, 0.0, 0.0))
     let direction = normalize(pixel - origin)
 

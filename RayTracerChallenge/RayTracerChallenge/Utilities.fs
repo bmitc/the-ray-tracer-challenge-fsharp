@@ -5,6 +5,8 @@
 [<Measure>] type pixels
 [<Measure>] type world
 
+let inline removeUnits (x: float<_>) = float x
+
 /// Removes the radians unit of measure from the float
 let removeRadians (x: float<radians>) = x/1.0<radians>
 

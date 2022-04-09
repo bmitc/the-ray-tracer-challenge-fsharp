@@ -1,6 +1,6 @@
-﻿module RayTracer.PPM
+﻿/// FUnctions to create and write a canvas type to a PPM file
+module RayTracer.PPM
 
-open System
 open System.IO
 open System.Text
 open Utilities

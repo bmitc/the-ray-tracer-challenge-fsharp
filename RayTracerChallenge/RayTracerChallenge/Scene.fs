@@ -44,7 +44,7 @@ let prepareComputation (intersection: Intersection) ray =
       Point  = point;
       Eye    = eye;
       Normal = if d < 0.0 then -normal else normal;
-      Inside = d < 0.0}
+      Inside = d < 0.0 }
 
 /// Shades the world at a given intersection
 let shadeHit world computation =

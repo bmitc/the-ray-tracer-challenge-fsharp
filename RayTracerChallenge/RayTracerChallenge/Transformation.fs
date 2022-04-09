@@ -1,4 +1,5 @@
-﻿module RayTracer.Transformation
+﻿/// 3D transformations that operate on tuple types, such as vectors and points
+module RayTracer.Transformation
 
 open Utilities
 open Tuples
@@ -22,13 +23,13 @@ type Transform =
 /// Get the matrix that represents the transform
 let rec getTransformMatrix transform =
     match transform with
-    | Translation (x,y,z) -> Matrix(4, 4, array2D [[1.0; 0.0; 0.0; x  ];
-                                                   [0.0; 1.0; 0.0; y  ];
-                                                   [0.0; 0.0; 1.0; z  ];
+    | Translation (x,y,z) -> Matrix(4, 4, array2D [[1.0; 0.0; 0.0;  x ];
+                                                   [0.0; 1.0; 0.0;  y ];
+                                                   [0.0; 0.0; 1.0;  z ];
                                                    [0.0; 0.0; 0.0; 1.0]])
-    | Scaling (x,y,z)     -> Matrix(4, 4, array2D [[x  ; 0.0; 0.0; 0.0];
-                                                   [0.0; y  ; 0.0; 0.0];
-                                                   [0.0; 0.0; z  ; 0.0];
+    | Scaling (x,y,z)     -> Matrix(4, 4, array2D [[ x ; 0.0; 0.0; 0.0];
+                                                   [0.0;  y ; 0.0; 0.0];
+                                                   [0.0; 0.0;  z ; 0.0];
                                                    [0.0; 0.0; 0.0; 1.0]])
     | Reflection X        -> Matrix(4, 4, array2D [[-1.0; 0.0; 0.0; 0.0];
                                                    [ 0.0; 1.0; 0.0; 0.0];
@@ -99,16 +100,16 @@ let applyTransposedTransform transform (tuple : ITuple<'T>) =
     applyTransformMatrix transposedMatrix tuple
 
 /// Translates a vector or point by (x,y,z)
-let translate (x,y,z) = applyTransform (Translation (x,y,z))
+let translate (x,y,z) = Translation (x,y,z) |> applyTransform
 
-/// Scales a vector or point by (x,y,z) 
-let scale (x,y,z) = applyTransform (Scaling (x,y,z))
+/// Scales a vector or point by (x,y,z)
+let scale (x,y,z) = Scaling (x,y,z) |> applyTransform
 
 /// Reflects a vector or point across the axis
-let reflect axis = applyTransform (Reflection axis)
+let reflect axis = Reflection axis |> applyTransform
 
 /// Rotates a vector or point around the axis by the given angle
-let rotate (axis, angle: float<radians>) = applyTransform (Rotation (axis, angle))
+let rotate (axis, angle: float<radians>) = Rotation (axis, angle) |> applyTransform
 
 /// Shears a vector or point via the shear component by the given proportion
-let shear shearComponent proportion = applyTransform (Shearing (shearComponent, proportion))
+let shear shearComponent proportion = Shearing (shearComponent, proportion) |> applyTransform

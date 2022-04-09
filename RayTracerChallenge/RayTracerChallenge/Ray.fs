@@ -1,4 +1,5 @@
-﻿module RayTracer.Ray
+﻿/// Ray type and functions to process ray hits and intersections
+module RayTracer.Ray
 
 open Utilities
 open Tuples

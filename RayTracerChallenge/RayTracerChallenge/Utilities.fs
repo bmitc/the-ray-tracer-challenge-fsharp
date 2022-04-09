@@ -1,4 +1,5 @@
-﻿module RayTracer.Utilities
+﻿/// Utility units of measure, constants, and functions
+module RayTracer.Utilities
 
 [<Measure>] type radians
 [<Measure>] type degrees
@@ -8,12 +9,13 @@
 let inline removeUnits (x: float<_>) = float x
 
 /// Removes the radians unit of measure from the float
-let removeRadians (x: float<radians>) = x/1.0<radians>
+let inline removeRadians (x: float<radians>) = x/1.0<radians>
 
 /// Constant for pi in radians
 let pi = System.Math.PI * 1.0<radians>
 
 /// Constant for use in comparing floats within the ray tracer
+[<Literal>]
 let epsilon = 0.00001
 
 /// Compares the two floats to see if they are epsilon away from each other.
@@ -21,7 +23,7 @@ let epsilon = 0.00001
 let compareFloat x y = abs(x-y) <= epsilon
 
 /// Rounds the given float to the nearest integer and converts to an int
-let roundToInt x = int (round x)
+let inline roundToInt x = int (round x)
 
 /// Calculates the reciprocal of the float. If the input is close, to within
 /// epsilon, of 0.0, then this function returns 0.0. See the definition of epsilon.
@@ -33,8 +35,8 @@ let reciprocal x =
 /// An active pattern for matching an integer to know when it's odd or even
 let (|Even|Odd|) input = if input % 2 = 0 then Even else Odd
 
-/// Given a 2D array's width, converts a 1D array index to a 2D array (x,y) index
+/// Given a 2D array's width (number of columns), converts a 1D array index to a 2D array (x,y) index
 let inline convert1DIndexTo2DIndex index width = (index % width, index / width)
 
-/// Given a 2D array's width, converts a 2D array (x,y) index to a 1D array index
+/// Given a 2D array's width (number of columns), converts a 2D array (x,y) index to a 1D array index
 let inline convert2DIndexTo1DIndex x y width = x + y * width

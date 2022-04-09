@@ -1,4 +1,5 @@
-﻿module RayTracer.Color
+﻿/// Color type, color constants, and helper functions
+module RayTracer.Color
 
 open Utilities
 

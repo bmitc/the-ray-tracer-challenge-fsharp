@@ -1,4 +1,5 @@
-﻿module RayTracer.Tuples
+﻿/// Vector and point types and operations and a tuple interface
+module RayTracer.Tuples
 
 open Utilities
 
@@ -182,7 +183,7 @@ let dotProduct (u : Vector) (v : Vector) = sumVector (u * v)
 /// Compute the dot product of two vectors
 let dot = dotProduct
 
-// Note: the dot function is there for convienience to maintain capability with
+// Note: the dot function is for convienience to maintain capability with
 // The Ray Tracer Challange book's naming.
 
 /// Compute the cross product of two vectors
@@ -194,7 +195,7 @@ let crossProduct u v =
 /// Compute the cross product of two vectors
 let cross = crossProduct
 
-// Note: the cross function is there for convienience to maintain capability with
+// Note: the cross function is for convienience to maintain capability with
 // The Ray Tracer Challange book's naming.
 
 /// Compute the norm, that is the square of the dot product, of a vector

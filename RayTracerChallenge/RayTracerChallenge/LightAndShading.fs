@@ -1,4 +1,5 @@
-﻿module RayTracer.LightAndShading
+﻿/// Functions and types for calculating light and shading of shapes
+module RayTracer.LightAndShading
 
 open Tuples
 open Color

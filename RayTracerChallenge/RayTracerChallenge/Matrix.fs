@@ -1,22 +1,23 @@
-﻿module RayTracer.Matrix
+﻿/// An NxM matrix type
+module RayTracer.Matrix
 
 open Utilities
 open Tuples
 
 /// Creates an n by m 2D array from a sequence, going by rows first
-let create2DarrayByRow n m sequence =
+let private create2DarrayByRow n m sequence =
     array2D
         [| for i in 0..n-1 do
             [| for j in 0..m-1 -> Seq.item (i*m + j) sequence |] |]
 
 /// Creates an n by m 2D array from a sequence, going by columns first
-let create2DarrayByColumn n m sequence =
+let private create2DarrayByColumn n m sequence =
     array2D
         [| for i in 0..n-1 do
              [| for j in 0..m-1 -> Seq.item (i + j*n) sequence |] |]
 
 /// Compute the dot product of two arrays, which are assumed to be the same length
-let inline dotArray (array1: 'T[]) (array2: 'T[]) : 'T =
+let inline private dotArray (array1: 'T[]) (array2: 'T[]) : 'T =
     Array.map2 (fun x y -> x * y) array1 array2 |> Array.sum
 
 /// A type to choose whether to create a matrix by row or column first when
@@ -87,6 +88,9 @@ type Matrix(n: int, m: int, elements: float[,]) =
     member _.Item
         with get(i, j) = elements.[i, j]
         //and set(a: int, b: int) (value:'T) = internalArray.[a, b] <- value
+
+    // The following are slicing extensions, which allows using F#'s slicing notation on Matrix objects
+    // https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/slices
 
     member this.GetSlice(rowStart: int option, rowFinish: int option, columnStart: int option, columnFinish: int option) =
         let rowStart =
@@ -225,6 +229,6 @@ type Matrix(n: int, m: int, elements: float[,]) =
 
 /// Multiples a tuple by a matrix and returns a value of the underlying tuple type, such as vector or point
 let matrixTimesTuple (m: Matrix) (tuple: ITuple<'T>) : 'T =
-    let tupleMatrix = Matrix(4, 1, tuple.ToTupleArray(), ByColumn) // convert the 4 element tuple array to a single column matrix
-    let result = m * tupleMatrix // the result is a single column matrix
-    tuple.FromTupleArray result.[*,0] // return the underlying tuple by converted from the first (and only) column
+    let tupleAsColumnMatrix = Matrix(4, 1, tuple.ToTupleArray(), ByColumn) // convert the 4 element tuple array to a single column matrix
+    let result = m * tupleAsColumnMatrix // the result is a single column matrix
+    tuple.FromTupleArray result.[*,0] // return the underlying tuple by converting from the first (and only) column

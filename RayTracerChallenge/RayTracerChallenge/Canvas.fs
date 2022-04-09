@@ -1,4 +1,5 @@
-﻿module RayTracer.Canvas
+﻿/// Provides a canvas type that contains color pixels at (x,y)-coordinates
+module RayTracer.Canvas
 
 open Utilities
 open Color
@@ -12,11 +13,15 @@ type Canvas(width: int, height: int, initialColor: Color) =
     /// the parallelized functions in the Array.Parallel module.
     let array = Array.create (width * height) initialColor
 
+    /// Create a square canvas
     new(side) = Canvas(side, side, black)
 
+    /// Create a rectangular canvas with every pixel initialized to black
     new(width, height) = Canvas(width, height, black)
 
-    new(width: float, height: float) = Canvas(roundToInt width, roundToInt height, black)
+    /// Create a rectangular canvas with float sides, which are rounded to the nearest integers,
+    /// with every pixel initialized to black
+    new(width, height) = Canvas(roundToInt width, roundToInt height, black)
     
     /// The width of the canvas, in pixels
     member _.Width = width
@@ -40,6 +45,9 @@ type Canvas(width: int, height: int, initialColor: Color) =
     member _.Item
         with get(x, y) = array.[convert2DIndexTo1DIndex x y width]
         and  set(x, y) color = array.[convert2DIndexTo1DIndex x y width] <- color
+
+    // The following are slicing extensions, which allows using F#'s slicing notation on Canvas objects
+    // https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/slices
 
     member _.GetSlice(xStart: int option, xFinish: int option, yStart: int option, yFinish: int option) =
         let xStart =
@@ -89,10 +97,8 @@ type Canvas(width: int, height: int, initialColor: Color) =
         array.[start..finish]
 
     /// Updates the canvas' pixels (via mutation and in parallel) according to the given function.
+    /// The update function is f: (x: int) -> (y: int) -> (existingColor: Color) -> (newColor: Color)
     member this.UpdatePixels (f: int -> int -> Color -> Color) =
-        // Note that iteri and array's first dimension is the row and second dimension is the column.
-        // Thus, we need to swap those dimensions when thinking about (x,y) coordinates.
-        // The function f processes (x,y) coordinates, and when we interact with arrays, these are swapped.
         Array.Parallel.iteri (fun i color -> let (x, y) = convert1DIndexTo2DIndex i width
                                              (this.[x, y] <- f x y color)) array
         this

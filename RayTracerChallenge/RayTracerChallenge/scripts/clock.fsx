@@ -11,7 +11,7 @@ open RayTracer.Transformation
 
 let twelveOClock = point(0.0, 1.0, 0.0)
 let angle = pi/6.0
-let canvasSize = 200
+let canvasSize = 200<pixels>
 let center = point((float canvasSize)/2.0, (float canvasSize)/2.0, 0.0)
 
 let writeHour h =

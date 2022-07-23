@@ -22,14 +22,14 @@ let colorToPPMList maxColorValue (color: Color) =
 /// Collapses a canvas done to a list of pixel color values, [r1; g1; b1; r2; g2; b2; ...].
 /// Each row (constant y value) is collapsed to a list and the rows are processed startin
 /// with (x,0) first and ending with (x,height-1).
-let collapseCanvas maxColorValue (canvas: Canvas) =
+let collapseCanvas maxColorValue (canvas: Canvas<_>) =
     [for y in 0 .. (canvas.Height - 1) do
         for pixel in canvas.[*, y] -> (colorToPPMList maxColorValue pixel)]
     |> List.concat
 
 /// Convert a canvas to a PPM pixel string.
 /// The string is limited to have a maximum width of 70 characters to ensure capatability with PPM tools.
-let canvasToPPMPixels maxColorValue (c: Canvas) =
+let canvasToPPMPixels maxColorValue (c: Canvas<_>) =
     let maxWidth = 70 // Restrict the character width to 70 for PPM files
     let sb = StringBuilder("") // Use this to incrementally build the string as we recurse
     let rec helper (row: string) (count: int) (values: string list) =
@@ -53,14 +53,14 @@ let canvasToPPMPixels maxColorValue (c: Canvas) =
     helper "" 1 (collapseCanvas maxColorValue c)
 
 /// Converts a canvas to a PPM string, including the header and pixels
-let canvasToPPM (canvas: Canvas) =
+let canvasToPPM (canvas: Canvas<_>) =
     let maxColorValue = 255.0
     let header = createHeader canvas.Width canvas.Height maxColorValue
     let pixels = canvasToPPMPixels maxColorValue canvas
     sprintf "%s%s" header pixels
 
 /// Writes the canvas to a PPM file
-let writeToPPM (canvas: Canvas) (filePath: string) =
+let writeToPPM (canvas: Canvas<_>) (filePath: string) =
     // Create the directory if needed
     Path.GetDirectoryName(filePath) |> Directory.CreateDirectory |> ignore
     use file = File.CreateText(filePath)

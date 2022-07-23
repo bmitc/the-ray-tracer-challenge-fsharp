@@ -85,16 +85,16 @@ let rec inverse transform =
     | Combination transforms -> Combination (transforms |> List.rev |> List.map (fun t -> inverse t))
     
 /// Applies the transform matrix to a vector or point
-let applyTransformMatrix (transformMatrix: Matrix) (tuple: ITuple<'T>) =
+let applyTransformMatrix (transformMatrix: Matrix) (tuple: ITuple<'T, _>) =
     matrixTimesTuple transformMatrix tuple
 
 /// Applies the transform to a vector or point
-let applyTransform transform (tuple : ITuple<'T>) =
+let applyTransform transform (tuple : ITuple<'T, _>) =
     let matrix = getTransformMatrix transform
     applyTransformMatrix matrix tuple
     
 /// Applies the transpose of the transform to a vector or point
-let applyTransposedTransform transform (tuple : ITuple<'T>) =
+let applyTransposedTransform transform (tuple : ITuple<'T, _>) =
     let matrix = getTransformMatrix transform
     let transposedMatrix = matrix.ReplaceSubmatrix(3, 3, matrix.GetSubmatrix(3, 3).Transpose())
     applyTransformMatrix transposedMatrix tuple

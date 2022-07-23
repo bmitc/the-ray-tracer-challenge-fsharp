@@ -8,7 +8,7 @@ open RayTracer.Color
 open RayTracer.Canvas
 open RayTracer.PPM
 
-type Projectile = { Position: Point; Velocity: Vector }
+type Projectile = { Position: Point<1>; Velocity: Vector }
 
 type Environment = { Gravity: Vector; Wind: Vector }
 
@@ -24,7 +24,7 @@ let initialEnvironment =
     { Gravity = vector(0.0, -0.1, 0.0);
       Wind    = vector(-0.01, 0.0, 0.0) }
 
-let run environment initialPosition (canvas: Canvas) filePath =
+let run environment initialPosition (canvas: Canvas<pixels>) filePath =
     let mutable position = initialPosition
     while (tick environment position).Position.Y >= 0.0 do
         position <- (tick environment position)
@@ -33,5 +33,5 @@ let run environment initialPosition (canvas: Canvas) filePath =
 
 run initialEnvironment
     initialPosition
-    (Canvas(900, 550))
+    (Canvas(900<pixels>, 550<pixels>))
     (System.IO.Path.Combine(__SOURCE_DIRECTORY__, "../../../images/projectile.ppm"))

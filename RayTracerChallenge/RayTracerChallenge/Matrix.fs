@@ -228,7 +228,11 @@ type Matrix(n: int, m: int, elements: float[,]) =
         Matrix(this.N, this.M, elements |> Seq.cast<float>, ByColumn) // effectively takes the transpose
 
 /// Multiples a tuple by a matrix and returns a value of the underlying tuple type, such as vector or point
-let matrixTimesTuple (m: Matrix) (tuple: ITuple<'T>) : 'T =
-    let tupleAsColumnMatrix = Matrix(4, 1, tuple.ToTupleArray(), ByColumn) // convert the 4 element tuple array to a single column matrix
+let matrixTimesTuple (m: Matrix) (tuple: ITuple<'T, 'Unit>) : 'T =
+    let tupleAsColumnMatrix = Matrix(4, 1, tuple.ToTupleArray() |> Array.map removeUnits, ByColumn) // convert the 4 element tuple array to a single column matrix
     let result = m * tupleAsColumnMatrix // the result is a single column matrix
-    tuple.FromTupleArray result.[*,0] // return the underlying tuple by converting from the first (and only) column
+    // Return the underlying tuple by converting from the first (and only) column
+    // and then reapplying the units of measure
+    result.[*,0]
+    |> Array.map castFloatUnit<'Unit>
+    |> tuple.FromTupleArray

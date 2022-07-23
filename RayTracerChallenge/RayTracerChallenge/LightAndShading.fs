@@ -1,6 +1,7 @@
 ﻿/// Functions and types for calculating light and shading of shapes
 module RayTracer.LightAndShading
 
+open Utilities
 open Tuples
 open Color
 open Transformation
@@ -8,11 +9,11 @@ open Ray
 
 /// Calculates the surface normal of the object's shape, applying the object's transform
 /// if it contains one, at the given world point
-let normalAt object worldPoint =
+let normalAt object (worldPoint: Point<world>) =
     match object.Transform with
-    | None   -> normalize (worldPoint - point(0.0, 0.0, 0.0))                       // the object is located at the origin
+    | None   -> normalize (worldPoint - pointu<world>(0.0, 0.0, 0.0))               // the object is located at the origin
     | Some t -> let objectPoint = applyTransform (inverse t) worldPoint             // convert from world space to object space
-                let objectNormal = objectPoint - point(0.0, 0.0, 0.0)               // compute the normal in object space
+                let objectNormal = objectPoint - pointu<world>(0.0, 0.0, 0.0)       // compute the normal in object space
                 let worldNormal = applyTransposedTransform (inverse t) objectNormal // convert back to world space
                 normalize worldNormal                                               // return the normal normalized
 
@@ -20,12 +21,12 @@ let normalAt object worldPoint =
 let reflect vector normal = vector - 2.0 * (dot vector normal) * normal
 
 /// Represents a light source at a point and with an intensity
-type Light =
-    { Position  : Point
+type Light<[<Measure>] 'PointUnit> =
+    { Position  : Point<'PointUnit>
       Intensity : Color }
 
 /// Calculates a color according to the Phong reflection model
-let lighting material light point eyev normalv =
+let lighting material light (point: Point<_>) eyev normalv =
     let effectiveColor = material.Color * light.Intensity
     let lightv = normalize(light.Position - point)
     let ambient = material.Ambient * effectiveColor

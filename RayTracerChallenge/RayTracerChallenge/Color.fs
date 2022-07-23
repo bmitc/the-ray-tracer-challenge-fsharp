@@ -59,8 +59,8 @@ type Color = { Red: float; Green: float; Blue: float } with
     /// Overrides the Object.GetHashCode method, which is recommended when overriding Object.Equals
     override x.GetHashCode() = hash x // Re-use the built-in hash for records
 
-    /// Implements a custom comparison method, using the Utilities.compareFloat function
-    /// for the Color floats
+    // Implements a custom comparison method, using the Utilities.compareFloat function
+    // for the Color floats
     interface System.IComparable with
         member x.CompareTo y =
             match y with
@@ -88,11 +88,11 @@ let hadamardProduct c1 c2 =
       Blue  = c1.Blue  * c2.Blue }
 
 /// Clamps a number to be in the range [min, max]
-let clampNumber min max num =
-    match num with
+let clampNumber min max number =
+    match number with
     | x when (x >= max) -> max
     | x when (x <= min) -> min
-    | _                 -> num
+    | _                 -> number
 
 /// Clamps a color's components to be in the range [min, max]
 let clamp min max c =

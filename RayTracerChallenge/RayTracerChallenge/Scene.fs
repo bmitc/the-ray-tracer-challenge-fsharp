@@ -10,9 +10,9 @@ open Ray
 open LightAndShading
 
 /// Represents a world, consisting of objects and a light source
-type World =
+type World<[<Measure>] 'PointUnit> =
     { Objects     : Object list;
-      LightSource : Light }
+      LightSource : Light<'PointUnit> }
 
 /// Intersects the ray with all the objects in the world, returning an intersection list 
 let intersectWorld world ray =
@@ -23,13 +23,13 @@ let intersectWorld world ray =
 
 /// Represents precomputated values of an intersection, capturing the time and
 /// object of the intersection
-type Computation =
-    { Time   : float;  // time of the intersection
-      Object : Object; // the intersection object
-      Point  : Point;  // the point, in world space, where the intersection occurred
-      Eye    : Vector; // vector pointing back towards the camera, or eye
-      Normal : Vector; // normal at the intersection point and object's surface
-      Inside : bool }  // describes if a hit occurs on the inside of the object's shape
+type Computation<[<Measure>] 'PointUnit> =
+    { Time   : float;             // time of the intersection
+      Object : Object;            // the intersection object
+      Point  : Point<'PointUnit>; // the point, in world space, where the intersection occurred
+      Eye    : Vector;            // vector pointing back towards the camera, or eye
+      Normal : Vector;            // normal at the intersection point and object's surface
+      Inside : bool }             // describes if a hit occurs on the inside of the object's shape
 
 /// Prepares a Computation relating to the intersection
 let prepareComputation (intersection: Intersection) ray =
@@ -47,7 +47,7 @@ let prepareComputation (intersection: Intersection) ray =
       Inside = d < 0.0 }
 
 /// Shades the world at a given intersection
-let shadeHit world computation =
+let shadeHit world (computation: Computation<world>) =
     let material =
         match computation.Object.Material with
         | Some m -> m
@@ -94,8 +94,8 @@ type Camera =
               Transform      = Matrix(4, 4, Identity) }
 
         /// A value used to compute the HalfWidth and HalfHeight of the camera's canvas
-        /// It is the width of half of the canvas one pixel unit away from the camera
-        member private this.HalfView = tan(removeRadians(this.FieldOfView) / 2.0) * 1.0<pixels>
+        /// It is the width of half of the canvas one world unit away from the camera
+        member private this.HalfView = castFloatUnit<world> (tan(removeRadians(this.FieldOfView) / 2.0))
 
         /// The aspect ratio, the horizontal size over the vertical size, of the camera
         member private this.AspectRatio = this.HorizontalSize / this.VerticalSize
@@ -112,7 +112,7 @@ type Camera =
             then this.HalfView / this.AspectRatio
             else this.HalfView
 
-        /// The size of a canvas pixel in world coordinates 
+        /// Conversion factor to go from pixels to world units
         member this.PixelSize = (this.HalfWidth * 2.0) / this.HorizontalSize
         // Pixels are square, so only need to use horizontal or vertical values
 
@@ -138,12 +138,12 @@ let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
     // and then compute the ray's direction vector.
     // (Remember that the canvas is at z=-1.)
     let transformMatrix = camera.Transform.Invert()
-    let pixel = applyTransformMatrix transformMatrix (point(removeUnits worldX, removeUnits worldY, -1.0))
-    let origin = applyTransformMatrix transformMatrix (point(0.0, 0.0, 0.0))
+    let pixel = applyTransformMatrix transformMatrix (point(worldX, worldY, -1.0<world>))
+    let origin = applyTransformMatrix transformMatrix (pointu<world>(0.0, 0.0, 0.0))
     let direction = normalize(pixel - origin)
 
     ray origin direction
 
 let render camera world =
-    let image = Canvas(roundToInt (camera.HorizontalSize/1.0<pixels>), roundToInt (camera.VerticalSize/1.0<pixels>))
-    image.UpdatePixels(fun x y _ -> colorAt world (rayForPixel camera (float x*1.0<pixels>) (float y*1.0<pixels>)))
+    let image = Canvas(camera.HorizontalSize, camera.VerticalSize)
+    image.UpdatePixels(fun x y _ -> colorAt world (rayForPixel camera (floatUnits<pixels> x) (floatUnits<pixels> y)))

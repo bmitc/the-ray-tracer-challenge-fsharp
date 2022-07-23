@@ -38,7 +38,7 @@ let ``Intersect a world with a ray`` () =
 
 [<Fact>]
 let ``Precomputing the state of an intersection`` () =
-    let r = ray (point(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
+    let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     let i = { Object = sphere; Time = 4.0}
     let comps = prepareComputation i r
     (comps.Time, comps.Object, comps.Point, comps.Eye, comps.Normal)
@@ -46,14 +46,14 @@ let ``Precomputing the state of an intersection`` () =
 
 [<Fact>]
 let ``The hit, when an intersection occurs on the outside`` () =
-    let r = ray (point(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
+    let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     let i = { Object = sphere; Time = 4.0}
     let comps = prepareComputation i r
     comps.Inside |> should equal false
 
 [<Fact>]
 let ``The hit, when an intersection occurs on the inside`` () =
-    let r = ray (point(0.0, 0.0, 0.0)) (vector(0.0, 0.0, 1.0))
+    let r = ray (pointu<world>(0.0, 0.0, 0.0)) (vector(0.0, 0.0, 1.0))
     let i = { Object = sphere; Time = 1.0}
     let comps = prepareComputation i r
     (comps.Point, comps.Eye, comps.Inside, comps.Normal)
@@ -61,13 +61,13 @@ let ``The hit, when an intersection occurs on the inside`` () =
 
 [<Fact>]
 let ``Shading an intersection`` () =
-    let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
     let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
     let s2 = {sphere with Transform = Some t}
     let w = {Objects = [s1; s2]; LightSource = light}
-    let r = ray (point(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
+    let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     let shape = s1
     let i = { Object = shape; Time = 4.0}
     let comps = prepareComputation i r
@@ -75,13 +75,13 @@ let ``Shading an intersection`` () =
 
 [<Fact>]
 let ``Shading an intersection from the inside`` () =
-    let light = {Position = point(0.0, 0.25, 0.0); Intensity = color(1.0, 1.0, 1.0)}
+    let light = {Position = pointu<world>(0.0, 0.25, 0.0); Intensity = color(1.0, 1.0, 1.0)}
     let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
     let s2 = {sphere with Transform = Some t}
     let w = {Objects = [s1; s2]; LightSource = light}
-    let r = ray (point(0.0, 0.0, 0.0)) (vector(0.0, 0.0, 1.0))
+    let r = ray (pointu<world>(0.0, 0.0, 0.0)) (vector(0.0, 0.0, 1.0))
     let shape = s2
     let i = { Object = shape; Time = 0.5}
     let comps = prepareComputation i r
@@ -89,29 +89,29 @@ let ``Shading an intersection from the inside`` () =
 
 [<Fact>]
 let ``The color when a ray misses`` () =
-    let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
     let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
     let s2 = {sphere with Transform = Some t}
     let w = {Objects = [s1; s2]; LightSource = light}
-    let r = ray (point(0.0, 0.0, -5.0)) (vector(0.0, 1.0, 0.0))
+    let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 1.0, 0.0))
     colorAt w r |> should equal black
 
 [<Fact>]
 let ``The color when a ray hits`` () =
-    let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
     let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
     let s2 = {sphere with Transform = Some t}
     let w = {Objects = [s1; s2]; LightSource = light}
-    let r = ray (point(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
+    let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     colorAt w r |> should equal (color(0.38066, 0.47583, 0.2855))
 
 [<Fact>]
 let ``The color with an intersection behind the ray`` () =
-    let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
     let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
@@ -119,7 +119,7 @@ let ``The color with an intersection behind the ray`` () =
     let outer = {s1 with Material = Some {m with Ambient = 1.0}}
     let inner = {s2 with Material = Some {material() with Ambient = 1.0}}
     let w = {Objects = [outer; inner]; LightSource = light}
-    let r = ray (point(0.0, 0.0, 0.75)) (vector(0.0, 0.0, -1.0))
+    let r = ray (pointu<world>(0.0, 0.0, 0.75)) (vector(0.0, 0.0, -1.0))
     colorAt w r |> should equal inner.Material.Value.Color
 
 [<Fact>]
@@ -190,7 +190,7 @@ let ``Constructing a ray when the camera is transformed`` () =
 
 [<Fact>]
 let ``Rendering a world with a camera`` () =
-    let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
     let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}

@@ -1,6 +1,10 @@
 ﻿/// Vector and point types and operations and a tuple interface
 module RayTracer.Tuples
 
+// This compiler directive is to get rid of the FS1240 warning when type testing
+// types with units of measure
+#nowarn "1240"
+
 open Utilities
 
 // Tuples are intentionally separated out into separate types of Vector and Point.
@@ -11,27 +15,27 @@ open Utilities
 // whereas the correct type design pays off in the overall design of the ray tracer.
 
 /// Interface used to convert 3D tuple-like elements to and from a 4D tuple
-type ITuple<'T> =
+type ITuple<'Tuple, [<Measure>] 'Unit> =
 
     /// The first element of the tupe-like element
-    abstract member X1 : float
+    abstract member X1 : float<'Unit>
 
     /// The second element of the tupe-like element
-    abstract member X2 : float
+    abstract member X2 : float<'Unit>
 
     /// The third element of the tupe-like element
-    abstract member X3 : float
+    abstract member X3 : float<'Unit>
 
     /// Converts a 3D tuple-like element to an array of length four consisting of
     /// the three components plus a fourth component. The array is essentially the
     /// homogeneous coordinate representation of the tuple.
-    abstract member ToTupleArray : unit -> float[]
+    abstract member ToTupleArray : unit -> float<'Unit>[]
 
     /// Creates a 3D tuple-like element from a tuple array
-    abstract member FromTupleArray : float[] -> 'T
+    abstract member FromTupleArray : float<'Unit>[] -> 'Tuple
 
 /// Represents a 3D vector
-[<CustomEquality; CustomComparison>]
+[<CustomEquality; NoComparison>]
 type Vector = { I: float; J: float; K: float } with
 
     /// Maps the operation to each element of the vector
@@ -75,21 +79,9 @@ type Vector = { I: float; J: float; K: float } with
     /// Overrides the Object.GetHashCode method, which is recommended when overriding Object.Equals 
     override x.GetHashCode () = hash x // Re-use the built-in hash for records
 
-    interface System.IComparable with
-        
-        /// Implements a custom comparison method, using the Utilities.compareFloat function
-        /// for the Vector floats
-        member x.CompareTo y =
-            match y with
-            | :? Vector as v -> [x.I.CompareTo v.I; x.J.CompareTo v.J; x.K.CompareTo v.K]
-                                |> List.tryFind (fun result -> result <> 0)
-                                |> function
-                                    | Some x -> x
-                                    | None   -> 0
-            | _ -> 0
-
-    /// Implements the ITuple interface to be treated like a tuple-like element
-    interface ITuple<Vector> with
+    // Implements the ITuple interface to be treated like a tuple-like element.
+    // Vectors are treated as dimensionless, so the units of measure are <1>.
+    interface ITuple<Vector, 1> with
         member this.X1 = this.I
         member this.X2 = this.J
         member this.X3 = this.K
@@ -100,8 +92,8 @@ type Vector = { I: float; J: float; K: float } with
 let vector (i,j,k) = { I = i; J = j; K = k }
 
 /// Represents a 3D point
-[<CustomEquality; CustomComparison>]
-type Point = { X: float; Y: float; Z: float } with
+[<CustomEquality; NoComparison>]
+type Point<[<Measure>] 'Unit> = { X: float<'Unit>; Y: float<'Unit>; Z: float<'Unit> } with
 
     /// Maps the operation to each element of the vector
     static member mapElementwise op p = {X = op p.X; Y = op p.Y; Z = op p.Z}
@@ -112,67 +104,59 @@ type Point = { X: float; Y: float; Z: float } with
     static member mapPairwise op p q = {X = op p.X q.X; Y = op p.Y q.Y; Z = op p.Z q.Z}
     
     /// Add a constant to each element of a point
-    static member ( + ) (a: float, p) = Point.mapElementwise ((+) a) p
+    static member ( + ) (a: float<'Unit>, p) = Point<'Unit>.mapElementwise ((+) a) p
 
     /// Multiply each element of a point by a constant
-    static member ( * ) (a: float, p) = Point.mapElementwise ((*) a) p
+    static member ( * ) (a: float, p) = Point<'Unit>.mapElementwise ((*) a) p
 
     /// Divide each element of the vector by a constant
-    static member ( / ) (p, a: float) = Point.mapElementwise (fun x -> x / a) p
+    static member ( / ) (p, a: float) = Point<'Unit>.mapElementwise (fun x -> x / a) p
 
     /// Adds a point to a vector
-    static member ( + ) (p, v: Vector) = { X = p.X + v.I; Y = p.Y + v.J; Z = p.Z + v.K }
+    static member ( + ) (p, v: Vector) = { X = p.X + castFloatUnit<'Unit> v.I; Y = p.Y + castFloatUnit<'Unit> v.J; Z = p.Z + castFloatUnit<'Unit> v.K }
 
     /// Subtracts two points to get a vector that points from q to p
-    static member ( - ) (p, q) = vector( p.X - q.X, p.Y - q.Y, p.Z - q.Z)
+    static member ( - ) (p, q) = vector( removeUnits(p.X - q.X), removeUnits(p.Y - q.Y), removeUnits(p.Z - q.Z))
 
     /// Subtracts a vector from a point
-    static member ( - ) (p, v: Vector) = { X = p.X - v.I; Y = p.Y - v.J; Z = p.Z - v.K }
+    static member ( - ) (p, v: Vector) = { X = p.X - castFloatUnit<'Unit> v.I; Y = p.Y - castFloatUnit<'Unit> v.J; Z = p.Z - castFloatUnit<'Unit> v.K }
 
     /// Multiply two points, multiplying each element in one point by the corresponding
     /// positional element in the other point
-    static member ( * ) (p, q) = Point.mapPairwise (*) p q
+    static member ( * ) (p, q) = Point<'Unit>.mapPairwise (*) p q
 
     /// Divide two points, dividing each element in one point by the corresponding
     /// positional element in the other point
-    static member ( / ) (p, q) = Point.mapPairwise (/) p q
+    static member ( / ) (p, q) = Point<'Unit>.mapPairwise (/) p q
 
     /// Negate each element of a point
-    static member ( ~- ) (p: Point) = -1.0 * p
+    static member ( ~- ) (p: Point<'Unit>) = -1.0 * p
 
     /// Overrides the Object.Equals method to provide a custom equality compare for Point records
-    override x.Equals object =
+    override this.Equals object =
         match object with
-        | :? Point as p -> compareFloat x.X p.X &&
-                           compareFloat x.Y p.Y &&
-                           compareFloat x.Z p.Z
+        // The #nowarn "1240" is ignore warning FS1240 for the snippet `:? Point<_>`
+        | :? Point<_> as p -> compareFloat this.X p.X &&
+                              compareFloat this.Y p.Y &&
+                              compareFloat this.Z p.Z
         | _ -> false
 
     /// Overrides the Object.GetHashCode method, which is recommended when overriding Object.Equals
     override x.GetHashCode () = hash x // Re-use the built-in hash for records
 
-    /// Implements a custom comparison method, using the Utilities.compareFloat function
-    /// for the Point floats
-    interface System.IComparable with
-        member x.CompareTo y =
-            match y with
-            | :? Point as p -> [x.X.CompareTo p.X; x.Y.CompareTo p.Y; x.Z.CompareTo p.Z]
-                               |> List.tryFind (fun result -> result <> 0)
-                               |> function
-                                   | Some x -> x
-                                   | None   -> 0
-            | _ -> 0
-
-    /// Implements the ITuple interface to be treated like a tuple-like element
-    interface ITuple<Point> with
+    // Implements the ITuple interface to be treated like a tuple-like element
+    interface ITuple<Point<'Unit>, 'Unit> with
         member this.X1 = this.X
         member this.X2 = this.Y
         member this.X3 = this.Z
-        member this.ToTupleArray () = [| this.X; this.Y; this.Z; 1.0 |]
+        member this.ToTupleArray () = [| this.X; this.Y; this.Z; LanguagePrimitives.FloatWithMeasure 1.0 |]
         member _.FromTupleArray array = { X = array.[0]; Y = array.[1]; Z = array.[2] }
 
-/// Convenience function for creating a Point record
-let point (x, y, z) = { X = x; Y = y; Z = z }
+/// Convenience function for creating a Point record from floats with units of measure
+let pointu<[<Measure>] 'Unit> (x, y, z) = Point<'Unit>.mapElementwise castFloatUnit<'Unit> { X = x; Y = y; Z = z }
+
+/// Convenience function for creating a Point record from floats with no units of measure
+let point ((x, y, z): float<'Unit> * float<'Unit> * float<'Unit>) = { X = x; Y = y; Z = z }
 
 /// Sum all elements of a vector to a single number
 let sumVector v = v.I + v.J + v.K

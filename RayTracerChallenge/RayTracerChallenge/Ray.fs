@@ -7,7 +7,7 @@ open Color
 open Transformation
 
 /// A ray starting at an origin and pointing in a direction
-type Ray = { Origin: Point; Direction: Vector}
+type Ray<[<Measure>] 'PointUnit> = { Origin: Point<'PointUnit>; Direction: Vector}
 
 /// Convience function for creating a ray record
 let ray origin direction = { Origin = origin; Direction = direction}
@@ -56,13 +56,13 @@ let transform transform ray =
 
 /// Calculates all the intersections of the ray with the object. The intersections
 /// are not sorted. It's possible there are no intersections, which is an empty list.
-let intersect (ray: Ray) (object: Object) =
+let intersect (ray: Ray<'Unit>) (object: Object) =
     let r =
         match object.Transform with
         | Some t -> transform (inverse t) ray
         | None   -> ray
     match object.Shape with
-    | Sphere -> let sphereToRay = r.Origin - point(0.0, 0.0, 0.0)
+    | Sphere -> let sphereToRay = r.Origin - pointu<'Unit>(0.0, 0.0, 0.0)
                 let a = dotProduct r.Direction r.Direction
                 let b = 2.0 * (dotProduct r.Direction sphereToRay)
                 let c = (dotProduct sphereToRay sphereToRay) - 1.0

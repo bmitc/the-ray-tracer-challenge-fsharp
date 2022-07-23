@@ -2,6 +2,7 @@
 
 #load "load.fsx"
 
+open RayTracer.Utilities
 open RayTracer.Tuples
 open RayTracer.Color
 open RayTracer.Canvas
@@ -9,16 +10,16 @@ open RayTracer.PPM
 open RayTracer.Ray
 open RayTracer.LightAndShading
 
-let rayOrigin = point(0.0, 0.0, -5.0)
-let wallZ = 10.0
-let wallSize = 7.0
-let canvasSize = 1000.0
+let rayOrigin = pointu<world>(0.0, 0.0, -5.0)
+let wallZ = 10.0<world>
+let wallSize = 7.0<world>
+let canvasSize = 1000.0<pixels>
 let pixelSize = wallSize / canvasSize
 let halfSize = wallSize / 2.0
-let canvas = Canvas(canvasSize, canvasSize)
+let canvas = Canvas(canvasSize)
 
 let m = {material() with Color = color(0.0, 0.5, 1.0)}
-let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
 
 let compute x y =
     let worldX = -halfSize + pixelSize * x
@@ -31,10 +32,10 @@ let compute x y =
                 let normal = normalAt i.Object point
                 let eye = -r.Direction
                 lighting m light point eye normal
-    | None   -> color(0.0, 0.0, 0.0)
+    | None   -> black
 
 #time
-canvas.UpdatePixels(fun x y _ -> compute (float x) (float y))
+canvas.UpdatePixels(fun x y _ -> compute (floatUnits<pixels> x) (floatUnits<pixels> y))
 #time
 
 writeToPPM canvas (System.IO.Path.Combine(__SOURCE_DIRECTORY__, "../../../images/lightAndShading.ppm"))

@@ -1,4 +1,4 @@
-[![build and test](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/actions/workflows/build-and-test.yml)
+[![build and test](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/actions/workflows/build-and-test.yml/badge.svg?branch=main&event=workflow_run)](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/actions/workflows/build-and-test.yml)
 
 # The Ray Tracer Challenge in F#
 This repository is an F# implementations of the ray tracer found in The Ray Tracer Challenge book by Jamis Buck. [Tests](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/tree/main/RayTracerChallenge/XUnitTests) are fully implemented, and due to F#'s clean syntax and domain modeling, the tests are nearly identical at moments to the psuedocode used to specify the tests in the book. It's been a pleasure to write this code in F#.

@@ -11,6 +11,7 @@
     <None Include="scripts\circle.fsx" />
     <None Include="scripts\lightAndShading.fsx" />
     <None Include="scripts\scene.fsx" />
+    <None Include="scripts\shadows.fsx" />
     <Compile Include="Utilities.fs" />
     <Compile Include="Tuples.fs" />
     <Compile Include="Color.fs" />

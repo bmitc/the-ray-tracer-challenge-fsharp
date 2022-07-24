@@ -7,7 +7,9 @@ open Color
 open Transformation
 
 /// A ray starting at an origin and pointing in a direction
-type Ray<[<Measure>] 'PointUnit> = { Origin: Point<'PointUnit>; Direction: Vector}
+type Ray<[<Measure>] 'PointUnit> =
+    { Origin    : Point<'PointUnit>
+      Direction : Vector }
 
 /// Convience function for creating a ray record
 let ray origin direction = { Origin = origin; Direction = direction}
@@ -41,7 +43,7 @@ type Object =
       Transform : Transform option
       Material  : Material option }
 
-/// Convenience function for creating a sphere object
+/// Convenience value for a default sphere object with no transform or material
 let sphere = {Shape = Sphere; Transform = None; Material = None}
 
 /// An intersection consists of what object was intersected and at what time along a ray
@@ -80,4 +82,7 @@ let sort = List.sortBy (fun intersection -> intersection.Time)
 
 /// Determines whether an intersection list, which is automatically sorted, contains
 /// a hit or not, represented as an intersection option type.
-let hit intersections = intersections |> sort |> List.tryFind (fun i -> i.Time >= 0.0)
+let hit intersections =
+    intersections
+    |> sort
+    |> List.tryFind (fun intersection -> intersection.Time >= 0.0)

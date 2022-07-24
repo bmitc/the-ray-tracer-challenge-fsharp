@@ -38,6 +38,9 @@ let pi = System.Math.PI * 1.0<radians>
 [<Literal>]
 let epsilon = 0.00001
 
+/// Constant, in world units, for use in comparing floats within the ray tracer
+let epsilonWorld = epsilon * 1.0<world>
+
 /// Compares the two floats to see if they are epsilon away from each other.
 /// See the definition of epsilon to see the resolution of the compare.
 /// Units of measure are ignored.

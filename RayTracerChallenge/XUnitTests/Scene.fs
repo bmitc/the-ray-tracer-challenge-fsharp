@@ -11,27 +11,35 @@ open RayTracer.Ray
 open RayTracer.LightAndShading
 open RayTracer.Scene
 
+// defaultWorld needs to be a 0-arity function instead of a value due to how Xunit works.
+// The alternative is to create a test class.
+
+/// Represents a default world to be used in tests
+let defaultWorld () =
+    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
+    let t = Scaling(0.5, 0.5, 0.5)
+    let s1 = {sphere with Material = Some m}
+    let s2 = {sphere with Transform = Some t}
+    { Objects = [s1; s2]; LightSource = light }
+
 // "Creating a world"
 // This test is not implemented.
 
 [<Fact>]
 let ``The default world`` () =
-    let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
     let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
     let s2 = {sphere with Transform = Some t}
     let w = {Objects = [s1; s2]; LightSource = light}
     (w.LightSource, List.contains s1 w.Objects, List.contains s2 w.Objects) |> should equal (light, true, true)
+    w |> should equal (defaultWorld())
 
 [<Fact>]
 let ``Intersect a world with a ray`` () =
-    let light = {Position = point(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
-    let t = Scaling(0.5, 0.5, 0.5)
-    let s1 = {sphere with Material = Some m}
-    let s2 = {sphere with Transform = Some t}
-    let w = {Objects = [s1; s2]; LightSource = light}
+    let w = defaultWorld()
     let r = ray (point(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     let xs = intersectWorld w r
     xs |> List.map (fun x -> x.Time) |> should equal [4.0; 4.5; 5.5; 6.0]
@@ -61,51 +69,31 @@ let ``The hit, when an intersection occurs on the inside`` () =
 
 [<Fact>]
 let ``Shading an intersection`` () =
-    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
-    let t = Scaling(0.5, 0.5, 0.5)
-    let s1 = {sphere with Material = Some m}
-    let s2 = {sphere with Transform = Some t}
-    let w = {Objects = [s1; s2]; LightSource = light}
+    let w = defaultWorld()
     let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
-    let shape = s1
+    let shape = w.Objects.[0]
     let i = { Object = shape; Time = 4.0}
     let comps = prepareComputation i r
     shadeHit w comps |> should equal (color(0.38066, 0.47583, 0.2855))
 
 [<Fact>]
 let ``Shading an intersection from the inside`` () =
-    let light = {Position = pointu<world>(0.0, 0.25, 0.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
-    let t = Scaling(0.5, 0.5, 0.5)
-    let s1 = {sphere with Material = Some m}
-    let s2 = {sphere with Transform = Some t}
-    let w = {Objects = [s1; s2]; LightSource = light}
+    let w = { defaultWorld() with LightSource = {Position = pointu<world>(0.0, 0.25, 0.0); Intensity = color(1.0, 1.0, 1.0)} }
     let r = ray (pointu<world>(0.0, 0.0, 0.0)) (vector(0.0, 0.0, 1.0))
-    let shape = s2
+    let shape = w.Objects.[1]
     let i = { Object = shape; Time = 0.5}
     let comps = prepareComputation i r
     shadeHit w comps |> should equal (color(0.90498, 0.90498, 0.90498))
 
 [<Fact>]
 let ``The color when a ray misses`` () =
-    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
-    let t = Scaling(0.5, 0.5, 0.5)
-    let s1 = {sphere with Material = Some m}
-    let s2 = {sphere with Transform = Some t}
-    let w = {Objects = [s1; s2]; LightSource = light}
+    let w = defaultWorld()
     let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 1.0, 0.0))
     colorAt w r |> should equal black
 
 [<Fact>]
 let ``The color when a ray hits`` () =
-    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
-    let t = Scaling(0.5, 0.5, 0.5)
-    let s1 = {sphere with Material = Some m}
-    let s2 = {sphere with Transform = Some t}
-    let w = {Objects = [s1; s2]; LightSource = light}
+    let w = defaultWorld()
     let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     colorAt w r |> should equal (color(0.38066, 0.47583, 0.2855))
 
@@ -190,12 +178,7 @@ let ``Constructing a ray when the camera is transformed`` () =
 
 [<Fact>]
 let ``Rendering a world with a camera`` () =
-    let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
-    let t = Scaling(0.5, 0.5, 0.5)
-    let s1 = {sphere with Material = Some m}
-    let s2 = {sphere with Transform = Some t}
-    let w = {Objects = [s1; s2]; LightSource = light}
+    let w = defaultWorld()
     let from = point(0.0, 0.0, -5.0)
     let toward = point(0.0, 0.0, 0.0)
     let up = vector(0.0, 1.0, 0.0)
@@ -203,3 +186,47 @@ let ``Rendering a world with a camera`` () =
              with Transform = viewTransform from toward up}
     let image = render c w
     image.[5, 5] |> should equal (color(0.38066, 0.47583, 0.2855))
+
+[<Fact>]
+let ``There is no shadow when nothing is collinear with point and light`` () =
+    let w = defaultWorld()
+    let p = pointu<world>(0.0, 10.0, 0.0)
+    isShadowed w p |> should equal false
+
+[<Fact>]
+let ``The shadow when an object is between the point and the light`` () =
+    let w = defaultWorld()
+    let p = pointu<world>(10.0, -10.0, 10.0)
+    isShadowed w p |> should equal true
+
+[<Fact>]
+let ``There is no shadow when an object is behind the light`` () =
+    let w = defaultWorld()
+    let p = pointu<world>(-20.0, 20.0, -20.0)
+    isShadowed w p |> should equal false
+
+[<Fact>]
+let ``There is no shadow when an object is behind the point`` () =
+    let w = defaultWorld()
+    let p = pointu<world>(-2.0, 2.0, -2.0)
+    isShadowed w p |> should equal false
+
+[<Fact>]
+let ``shade_hit is given an intersection in shadow`` () =
+    let light = { Position = pointu<world>(0.0, 0.0, -10.0); Intensity = color(1.0, 1.0, 1.0) }
+    let s1 = sphere
+    let s2 = { sphere with Transform = Some (Translation (0.0, 0.0, 10.0)) }
+    let w = { Objects = [s1; s2]; LightSource = light }
+    let r = ray (pointu<world>(0.0, 0.0, 5.0)) (vector(0.0, 0.0, 1.0))
+    let i = { Object = s2; Time = 4.0 }
+    let comps = prepareComputation i r
+    shadeHit w comps |> should equal (color(0.1, 0.1, 0.1))
+
+[<Fact>]
+let ``The hit should offset the point`` () =
+    let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
+    let shape = { sphere with Transform = Some (Translation (0.0, 0.0, 1.0)) }
+    let i = { Object = shape; Time = 5.0 }
+    let comps = prepareComputation i r
+    comps.OverPoint.Z |> should lessThan (-epsilonWorld/2.0)
+    comps.Point.Z |> should greaterThan comps.OverPoint.Z

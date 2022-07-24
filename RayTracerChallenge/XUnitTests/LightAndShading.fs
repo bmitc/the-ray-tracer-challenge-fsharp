@@ -76,21 +76,21 @@ let ``Lighting with the eye between the light and the surface`` () =
     let eyev = vector(0.0, 0.0, -1.0)
     let normalv = vector(0.0, 0.0, -1.0)
     let light = {Position = point(0.0, 0.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    lighting m light position eyev normalv |> should equal (color(1.9, 1.9, 1.9))
+    lighting m light position eyev normalv false |> should equal (color(1.9, 1.9, 1.9))
 
 [<Fact>]
 let ``Lighting with the eye between light and surface, eye offset 45 degrees`` () =
     let eyev = vector(0.0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0)
     let normalv = vector(0.0, 0.0, -1.0)
     let light = {Position = point(0.0, 0.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    lighting m light position eyev normalv |> should equal (color(1.0, 1.0, 1.0))
+    lighting m light position eyev normalv false |> should equal (color(1.0, 1.0, 1.0))
 
 [<Fact>]
 let ``Lighting with the eye opposite surface, light offset 45 degrees`` () =
     let eyev = vector(0.0, 0.0, -1.0)
     let normalv = vector(0.0, 0.0, -1.0)
     let light = {Position = point(0.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    lighting m light position eyev normalv |> should equal (color(0.7364, 0.7364, 0.7364))
+    lighting m light position eyev normalv false |> should equal (color(0.7364, 0.7364, 0.7364))
 
 [<Fact>]
 let ``Lighting with the eye in the path of the reflection vector`` () =
@@ -98,11 +98,19 @@ let ``Lighting with the eye in the path of the reflection vector`` () =
     let eyev = vector(0.0, -sqrt(2.0)/2.0, -sqrt(2.0)/2.0)
     let normalv = vector(0.0, 0.0, -1.0)
     let light = {Position = point(0.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    lighting m light position eyev normalv |> should equal (color(1.6364, 1.6364, 1.6364))
+    lighting m light position eyev normalv false |> should equal (color(1.6364, 1.6364, 1.6364))
 
 [<Fact>]
 let ``Lighting with the light behind the surface`` () =
     let eyev = vector(0.0, 0.0, -1.0)
     let normalv = vector(0.0, 0.0, -1.0)
     let light = {Position = point(0.0, 0.0, 10.0); Intensity = color(1.0, 1.0, 1.0)}
-    lighting m light position eyev normalv |> should equal (color(0.1, 0.1, 0.1))
+    lighting m light position eyev normalv false |> should equal (color(0.1, 0.1, 0.1))
+
+[<Fact>]
+let ``Lighting with the surface in shadow`` () =
+    let eyev = vector(0.0, 0.0, -1.0)
+    let normalv = vector(0.0, 0.0, -1.0)
+    let light = {Position = point(0.0, 0.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+    let inShadow = true
+    lighting m light position eyev normalv inShadow |> should equal (color(0.1, 0.1, 0.1))

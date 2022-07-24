@@ -21,15 +21,39 @@ let intersectWorld world ray =
     |> List.concat
     |> sort
 
+/// Determines whether the point is in the shadow of one of the world's objects
+let isShadowed world (point: Point<world>) =
+    // Calculate the distance from the point to the world's light source and
+    // the direction from the point toward the light source
+    let vector = world.LightSource.Position - point
+    let distance = magnitude vector
+    let direction = normalize vector
+
+    // A ray pointing from the point toward the world's light source
+    let ray = ray point direction
+
+    // Calculate any intersections with the ray, which starts at the point and points
+    // in the direction of the world's light source, and all objects in the world
+    let intersections = intersectWorld world ray
+
+    // Check if there was a hit. If so, if the time is less than the distance between
+    // the point and the world's light source, then the hit lies between the point and
+    // the light source.
+    let hit = hit intersections
+    match hit with
+    | Some intersection when intersection.Time < distance -> true
+    | _ -> false
+
 /// Represents precomputated values of an intersection, capturing the time and
 /// object of the intersection
 type Computation<[<Measure>] 'PointUnit> =
-    { Time   : float;             // time of the intersection
-      Object : Object;            // the intersection object
-      Point  : Point<'PointUnit>; // the point, in world space, where the intersection occurred
-      Eye    : Vector;            // vector pointing back towards the camera, or eye
-      Normal : Vector;            // normal at the intersection point and object's surface
-      Inside : bool }             // describes if a hit occurs on the inside of the object's shape
+    { Time      : float;             // time of the intersection
+      Object    : Object;            // the intersection object
+      Point     : Point<'PointUnit>; // the point, in world space, where the intersection occurred
+      OverPoint : Point<'PointUnit>; // the point with a z component slightly less than z=0
+      Eye       : Vector;            // vector pointing back towards the camera, or eye
+      Normal    : Vector;            // normal at the intersection point and object's surface
+      Inside    : bool }             // describes if a hit occurs on the inside of the object's shape
 
 /// Prepares a Computation relating to the intersection
 let prepareComputation (intersection: Intersection) ray =
@@ -39,24 +63,28 @@ let prepareComputation (intersection: Intersection) ray =
     let eye = -ray.Direction
     let normal = normalAt object point
     let d = dot normal eye
-    { Time   = time;
-      Object = object;
-      Point  = point;
-      Eye    = eye;
-      Normal = if d < 0.0 then -normal else normal;
-      Inside = d < 0.0 }
+    let computationNormal = if d < 0.0 then -normal else normal
+    { Time      = time
+      Object    = object
+      Point     = point
+      OverPoint = point + epsilon * computationNormal
+      Eye       = eye
+      Normal    = computationNormal
+      Inside    = d < 0.0 }
 
 /// Shades the world at a given intersection
 let shadeHit world (computation: Computation<world>) =
+    let shadowed = isShadowed world computation.OverPoint
     let material =
         match computation.Object.Material with
         | Some m -> m
         | None   -> material()
     lighting material
              world.LightSource
-             computation.Point
+             computation.OverPoint
              computation.Eye
              computation.Normal
+             shadowed
 
 /// Computes the color at the first intersection, if any, of the ray
 /// with an object in the world. In the event of no intersection,
@@ -144,6 +172,7 @@ let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
 
     ray origin direction
 
+/// Render a world onto a canvas using the camera
 let render camera world =
     let image = Canvas(camera.HorizontalSize, camera.VerticalSize)
-    image.UpdatePixels(fun x y _ -> colorAt world (rayForPixel camera (floatUnits<pixels> x) (floatUnits<pixels> y)))
+    image.UpdatePixels(fun x y _color -> colorAt world (rayForPixel camera (floatUnits<pixels> x) (floatUnits<pixels> y)))

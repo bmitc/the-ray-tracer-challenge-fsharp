@@ -22,7 +22,9 @@ let reflect vector normal = vector - 2.0 * (dot vector normal) * normal
 
 /// Represents a light source at a point and with an intensity
 type Light<[<Measure>] 'PointUnit> =
-    { Position  : Point<'PointUnit>
+    { /// The location of the light's point source
+      Position  : Point<'PointUnit>
+      /// The brightness and color of the light
       Intensity : Color }
 
 ////////////////////////////////////
@@ -30,7 +32,7 @@ type Light<[<Measure>] 'PointUnit> =
 ////////////////////////////////////
 // Ambient reflection: background lighting, or light reflected from other objects in the environment
 // Diffuse reflection: light reflected from a matte surface
-// Specular reflection: reflectin of the light source itself and results in what is called a specular highlight,
+// Specular reflection: reflection of the light source itself and results in what is called a specular highlight,
 //                      the bright spot on a curved surface
 
 /// Calculates a color according to the Phong reflection model

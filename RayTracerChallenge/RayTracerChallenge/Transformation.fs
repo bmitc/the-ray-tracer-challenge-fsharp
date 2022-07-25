@@ -5,20 +5,45 @@ open Utilities
 open Tuples
 open Matrix
 
-/// Represents one of the axis in 3D space
-type Axis = X | Y | Z
+/// Represents an axis in 3D space
+type Axis =
+    /// X-axis
+    | X
+    /// Y-axis
+    | Y
+    /// Z-axis
+    | Z
 
 /// Represents a shear component that can be applied in a shear transformation
-type ShearComponent = Xy | Xz | Yx | Yz | Zx | Zy
+type ShearComponent =
+    /// X in proportion to Y
+    | Xy
+    /// X in proportion to Z
+    | Xz
+    /// Y in proportion to X
+    | Yx
+    /// Y in proportion to Z
+    | Yz
+    /// Z in proportion to X
+    | Zx
+    /// Z in proportion to Y
+    | Zy
 
 /// Represents a 3D transform
 type Transform =
+    /// Translation moves a point via addition of the components to the point's components
     | Translation of x: float * y: float * z: float
+    /// Scaling moves a point via multiplication of the components with the point's components
     | Scaling     of x: float * y: float * z: float
+    /// Reflection moves a point to the other side of the given access, keeping the distance from the axis
     | Reflection  of Axis
+    /// Rotation moves a point by rotating by an angle, in radians, relative to an axis
     | Rotation    of Axis * angle: float<radians>
+    /// Shearing, or skew, makes straight lines slanted by moving a component in proportion to another component
     | Shearing    of ShearComponent * proportion: float
-    | Combination of Transform list // transforms will be listed left to right but applied right to left
+    /// Combination chains together several transforms. Transforms listed left to right but will be applied
+    /// right to left.
+    | Combination of Transform list
 
 /// Get the matrix that represents the transform
 let rec getTransformMatrix transform =

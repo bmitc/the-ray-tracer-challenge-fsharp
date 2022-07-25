@@ -11,7 +11,9 @@ open LightAndShading
 
 /// Represents a world, consisting of objects and a light source
 type World<[<Measure>] 'PointUnit> =
-    { Objects     : Object list;
+    { /// Collection of objects contained in the world
+      Objects     : Object list
+      /// A single point light source for the world
       LightSource : Light<'PointUnit> }
 
 /// Intersects the ray with all the objects in the world, returning an intersection list 
@@ -47,13 +49,20 @@ let isShadowed world (point: Point<world>) =
 /// Represents precomputated values of an intersection, capturing the time and
 /// object of the intersection
 type Computation<[<Measure>] 'PointUnit> =
-    { Time      : float;             // time of the intersection
-      Object    : Object;            // the intersection object
-      Point     : Point<'PointUnit>; // the point, in world space, where the intersection occurred
-      OverPoint : Point<'PointUnit>; // the point with a z component slightly less than z=0
-      Eye       : Vector;            // vector pointing back towards the camera, or eye
-      Normal    : Vector;            // normal at the intersection point and object's surface
-      Inside    : bool }             // describes if a hit occurs on the inside of the object's shape
+    { /// Time of the intersection
+      Time      : float
+      /// The intersection object
+      Object    : Object
+      /// The point, in world space, where the intersection occurred
+      Point     : Point<'PointUnit>
+      /// The point with a z component slightly less than z=0
+      OverPoint : Point<'PointUnit>
+      /// Vector pointing back towards the camera, or eye
+      Eye       : Vector
+      /// Normal at the intersection point and object's surface
+      Normal    : Vector
+      /// Describes if a hit occurs on the inside of the object's shape
+      Inside    : bool }
 
 /// Prepares a Computation relating to the intersection
 let prepareComputation (intersection: Intersection) ray =
@@ -94,6 +103,13 @@ let colorAt world ray =
     | Some i -> prepareComputation i ray |> shadeHit world
     | None   -> black
 
+/// <summary>
+/// Returns a transformation matrix that orients the eye to the world.
+/// </summary>
+/// <param name="from"> The location of the eye in the world</param>
+/// <param name="toward"> The location of the point in the world that the eye is looking at</param>
+/// <param name="up"> The vector indicating which direction is up</param>
+/// <returns>A transformation matrix used to orient the eye in the world.</returns>
 let viewTransform from toward up =
     let forward = normalize (toward - from)
     let left = crossProduct forward (normalize up)
@@ -107,9 +123,14 @@ let viewTransform from toward up =
 
 /// Represents a camera as a canvas one pixel in front of the camera
 type Camera =
-    { HorizontalSize : float<pixels>
-      VerticalSize   : float<pixels> 
+    { /// Horizontal size in pixels of the canvas that the picture will be rendered to
+      HorizontalSize : float<pixels>
+      /// Vertical size in pixels of the canvas that the picture will be rendered to
+      VerticalSize   : float<pixels>
+      /// Angle that describes how much the camera can see. When the field of view is small,
+      /// the view will appear zoomed in, magnifying a smaller area of the scene.
       FieldOfView    : float<radians>
+      /// Matrix describing how the world should be oriented relative to the camera
       Transform      : Matrix }
 
     with

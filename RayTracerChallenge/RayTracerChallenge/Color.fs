@@ -74,13 +74,6 @@ type Color = { Red: float; Green: float; Blue: float } with
 /// Convenience function for creating a Color record
 let color (r, g, b) = { Red = r; Green = g; Blue = b }
 
-// Useful color constants
-let black = color (0.0, 0.0, 0.0)
-let white = color (1.0, 1.0, 1.0)
-let red   = color (1.0, 0.0, 0.0)
-let green = color (0.0, 1.0, 0.0)
-let blue  = color (0.0, 0.0, 1.0)
-
 /// Computes the Hadamard (or Schur) product of the colors
 let hadamardProduct c1 c2 =
     { Red   = c1.Red   * c2.Red;
@@ -97,3 +90,20 @@ let clampNumber min max number =
 /// Clamps a color's components to be in the range [min, max]
 let clamp min max c =
     Color.mapElementwise (clampNumber min max) c
+
+// Useful color constants
+
+/// Black color constant
+let black = color (0.0, 0.0, 0.0)
+
+/// White color constant
+let white = color (1.0, 1.0, 1.0)
+
+/// Red color constant
+let red   = color (1.0, 0.0, 0.0)
+
+/// Green color constant
+let green = color (0.0, 1.0, 0.0)
+
+/// Blue color constant
+let blue  = color (0.0, 0.0, 1.0)

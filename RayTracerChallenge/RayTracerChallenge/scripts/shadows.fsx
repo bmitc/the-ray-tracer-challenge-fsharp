@@ -53,7 +53,7 @@ let left = {sphere with Transform = Some (Combination [Translation(-1.5, 0.33, -
 let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
 let world = {Objects = [floor; leftWall; rightWall; middle; left; right]; LightSource = light}
 
-let camera = {camera(2000.0<pixels>, 1000.0<pixels>, pi/3.0)
+let camera = {camera(2000<pixels>, 1000<pixels>, pi/3.0)
               with Transform = viewTransform (point(0.0, 1.5, -5.0)) (point(0.0, 1.0, 0.0)) (vector(0.0, 1.0, 0.0)) }
 
 #time

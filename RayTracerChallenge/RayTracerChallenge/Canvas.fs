@@ -9,7 +9,7 @@ open Color
 let private processFloat (x: float<_>) = x |> removeUnits |> roundToInt |> castIntUnit<pixels>
 
 /// Private function to be used to process int<_> values in Canvas constructors.
-/// Converts float<_> to int<pixels>.
+/// Converts int<_> to int<pixels>.
 let private processInt (x: int<_>) = x |> int |> castIntUnit<pixels>
 
 (* Note: This is an interesting design challenge, designing the Canvas class and its constructors

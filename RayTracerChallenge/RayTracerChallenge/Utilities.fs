@@ -31,6 +31,12 @@ let inline floatUnits<[<Measure>] 'Unit> (x: int) = x |> float |> castFloatUnit<
 /// Converts a float to an integer and then casts to an integer with the given units
 let inline intUnits<[<Measure>] 'Unit> (x: float) = x |> int |> castIntUnit<'Unit>
 
+/// Converts an integer to a float while preserving the integer's units of measure
+let inline floatPreserveUnits (x: int<'Unit>) = x |> float |> castFloatUnit<'Unit>
+
+/// Converts a float to an integer while preserving the float's units of measure
+let inline intPreserveUnits (x: float<'Unit>) = x |> int |> castIntUnit<'Unit>
+
 /// Constant for pi in radians
 let pi = System.Math.PI * 1.0<radians>
 

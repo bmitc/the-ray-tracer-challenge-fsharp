@@ -143,35 +143,35 @@ let ``An arbitrary view transformation`` () =
 
 [<Fact>]
 let ``Constructing a camera`` () =
-    let c = camera(160.0<pixels>, 120.0<pixels>, pi/2.0)
+    let c = camera(160<pixels>, 120<pixels>, pi/2.0)
     (c.HorizontalSize, c.VerticalSize, c.FieldOfView, c.Transform)
-    |> should equal (160.0<pixels>, 120.0<pixels>, pi/2.0, Matrix(4, 4, Identity))
+    |> should equal (160<pixels>, 120<pixels>, pi/2.0, Matrix(4, 4, Identity))
 
 [<Fact>]
 let ``The pixel size for a horizontal canvas`` () =
-    let c = camera(200.0<pixels>, 125.0<pixels>, pi/2.0)
+    let c = camera(200<pixels>, 125<pixels>, pi/2.0)
     c.PixelSize |> should (equalWithin epsilon) 0.01<world>
 
 [<Fact>]
 let ``The pixel size for a vertical canvas`` () =
-    let c = camera(125.0<pixels>, 200.0<pixels>, pi/2.0)
+    let c = camera(125<pixels>, 200<pixels>, pi/2.0)
     c.PixelSize |> should (equalWithin epsilon) 0.01<world>
 
 [<Fact>]
 let ``Constructing a ray through the center of the canvas`` () =
-    let c = camera(201.0<pixels>, 101.0<pixels>, pi/2.0)
+    let c = camera(201<pixels>, 101<pixels>, pi/2.0)
     let r = rayForPixel c 100.0<pixels> 50.0<pixels>
     (r.Origin, r.Direction) |> should equal (point(0.0, 0.0, 0.0), vector(0.0, 0.0, -1.0))
 
 [<Fact>]
 let ``Constructing a ray through a corner of the canvas`` () =
-    let c = camera(201.0<pixels>, 101.0<pixels>, pi/2.0)
+    let c = camera(201<pixels>, 101<pixels>, pi/2.0)
     let r = rayForPixel c 0.0<pixels> 0.0<pixels>
     (r.Origin, r.Direction) |> should equal (point(0.0, 0.0, 0.0), vector(0.66519, 0.33259, -0.66851))
 
 [<Fact>]
 let ``Constructing a ray when the camera is transformed`` () =
-    let c = {camera(201.0<pixels>, 101.0<pixels>, pi/2.0)
+    let c = {camera(201<pixels>, 101<pixels>, pi/2.0)
              with Transform = getTransformMatrix (Combination [Rotation(Y, pi/4.0); Translation(0.0, -2.0, 5.0)])}
     let r = rayForPixel c 100.0<pixels> 50.0<pixels>
     (r.Origin, r.Direction) |> should equal (point(0.0, 2.0, -5.0), vector(sqrt(2.0)/2.0, 0.0, -sqrt(2.0)/2.0))
@@ -182,7 +182,7 @@ let ``Rendering a world with a camera`` () =
     let from = point(0.0, 0.0, -5.0)
     let toward = point(0.0, 0.0, 0.0)
     let up = vector(0.0, 1.0, 0.0)
-    let c = {camera(11.0<pixels>, 11.0<pixels>, pi/2.0)
+    let c = {camera(11<pixels>, 11<pixels>, pi/2.0)
              with Transform = viewTransform from toward up}
     let image = render c w
     image.[5, 5] |> should equal (color(0.38066, 0.47583, 0.2855))

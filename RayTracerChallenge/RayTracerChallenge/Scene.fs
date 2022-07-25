@@ -124,9 +124,9 @@ let viewTransform from toward up =
 /// Represents a camera as a canvas one pixel in front of the camera
 type Camera =
     { /// Horizontal size in pixels of the canvas that the picture will be rendered to
-      HorizontalSize : float<pixels>
+      HorizontalSize : int<pixels>
       /// Vertical size in pixels of the canvas that the picture will be rendered to
-      VerticalSize   : float<pixels>
+      VerticalSize   : int<pixels>
       /// Angle that describes how much the camera can see. When the field of view is small,
       /// the view will appear zoomed in, magnifying a smaller area of the scene.
       FieldOfView    : float<radians>
@@ -137,17 +137,19 @@ type Camera =
 
         /// A default camera
         static member Default =
-            { HorizontalSize = 0.0<pixels>
-              VerticalSize   = 0.0<pixels>
+            { HorizontalSize = 0<pixels>
+              VerticalSize   = 0<pixels>
               FieldOfView    = 0.0<radians>
               Transform      = Matrix(4, 4, Identity) }
 
         /// A value used to compute the HalfWidth and HalfHeight of the camera's canvas
         /// It is the width of half of the canvas one world unit away from the camera
-        member private this.HalfView = castFloatUnit<world> (tan(removeRadians(this.FieldOfView) / 2.0))
+        member private this.HalfView =
+            castFloatUnit<world> (tan(removeRadians(this.FieldOfView) / 2.0))
 
         /// The aspect ratio, the horizontal size over the vertical size, of the camera
-        member private this.AspectRatio = this.HorizontalSize / this.VerticalSize
+        member private this.AspectRatio =
+            (floatPreserveUnits this.HorizontalSize) / (floatPreserveUnits this.VerticalSize)
 
         /// 
         member this.HalfWidth =
@@ -162,7 +164,7 @@ type Camera =
             else this.HalfView
 
         /// Conversion factor to go from pixels to world units
-        member this.PixelSize = (this.HalfWidth * 2.0) / this.HorizontalSize
+        member this.PixelSize = (this.HalfWidth * 2.0) / (floatPreserveUnits this.HorizontalSize)
         // Pixels are square, so only need to use horizontal or vertical values
 
 /// Convenience function for creating a camera with a default view transform

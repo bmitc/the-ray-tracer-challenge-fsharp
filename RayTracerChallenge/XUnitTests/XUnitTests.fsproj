@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Utilities.fs" />
     <Compile Include="Tuples.fs" />
     <Compile Include="Color.fs" />
     <Compile Include="Canvas.fs" />

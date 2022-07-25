@@ -193,3 +193,6 @@ let normSquared v = dotProduct v v
 
 /// Normalize a vector by dividing it by its norm or magnitude
 let normalize v = v / (norm v)
+
+/// Calculates the reflection of the vector across the normal vector
+let reflect vector normal = vector - 2.0 * (dot vector normal) * normal

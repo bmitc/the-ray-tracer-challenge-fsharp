@@ -7,6 +7,7 @@ open RayTracer.Tuples
 open RayTracer.Color
 open RayTracer.Canvas
 open RayTracer.PPM
+open RayTracer.Object
 open RayTracer.Ray
 
 let rayOrigin = pointu<world>(0.0, 0.0, -5.0)

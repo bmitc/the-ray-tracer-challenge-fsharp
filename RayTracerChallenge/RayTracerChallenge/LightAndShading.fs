@@ -1,24 +1,9 @@
 ﻿/// Functions and types for calculating light and shading of shapes
 module RayTracer.LightAndShading
 
-open Utilities
 open Tuples
 open Color
-open Transformation
-open Ray
-
-/// Calculates the surface normal of the object's shape, applying the object's transform
-/// if it contains one, at the given world point
-let normalAt object (worldPoint: Point<world>) =
-    match object.Transform with
-    | None   -> normalize (worldPoint - pointu<world>(0.0, 0.0, 0.0))               // the object is located at the origin
-    | Some t -> let objectPoint = applyTransform (inverse t) worldPoint             // convert from world space to object space
-                let objectNormal = objectPoint - pointu<world>(0.0, 0.0, 0.0)       // compute the normal in object space
-                let worldNormal = applyTransposedTransform (inverse t) objectNormal // convert back to world space
-                normalize worldNormal                                               // return the normal normalized
-
-/// Calculates the reflection of the vector across the normal vector
-let reflect vector normal = vector - 2.0 * (dot vector normal) * normal
+open Object
 
 /// Represents a light source at a point and with an intensity
 type Light<[<Measure>] 'PointUnit> =
@@ -27,6 +12,7 @@ type Light<[<Measure>] 'PointUnit> =
       /// The brightness and color of the light
       Intensity : Color }
 
+
 ////////////////////////////////////
 // Phong reflection model //////////
 ////////////////////////////////////
@@ -34,6 +20,7 @@ type Light<[<Measure>] 'PointUnit> =
 // Diffuse reflection: light reflected from a matte surface
 // Specular reflection: reflection of the light source itself and results in what is called a specular highlight,
 //                      the bright spot on a curved surface
+
 
 /// Calculates a color according to the Phong reflection model
 let lighting material light (point: Point<_>) eyev normalv inShadow =
@@ -61,7 +48,7 @@ let lighting material light (point: Point<_>) eyev normalv inShadow =
              // reflectDotEye represents the cosine of the angle between the reflection
              // vector and the eye vector. A negative number means the light reflects
              // away from the eye.
-             let reflectv = reflect -lightv normalv
+             let reflectv = Tuples.reflect -lightv normalv
              let reflectDotEye = dot reflectv eyev
              if reflectDotEye <= 0.0
              then (diffuse, color(0.0, 0.0, 0.0))

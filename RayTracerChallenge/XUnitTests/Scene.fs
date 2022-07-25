@@ -7,6 +7,7 @@ open RayTracer.Tuples
 open RayTracer.Color
 open RayTracer.Matrix
 open RayTracer.Transformation
+open RayTracer.Object
 open RayTracer.Ray
 open RayTracer.LightAndShading
 open RayTracer.Scene
@@ -17,7 +18,7 @@ open RayTracer.Scene
 /// Represents a default world to be used in tests
 let defaultWorld () =
     let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
+    let m = {Material.Default with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
     let s2 = {sphere with Transform = Some t}
@@ -29,7 +30,7 @@ let defaultWorld () =
 [<Fact>]
 let ``The default world`` () =
     let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
+    let m = {Material.Default with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
     let s2 = {sphere with Transform = Some t}
@@ -100,12 +101,12 @@ let ``The color when a ray hits`` () =
 [<Fact>]
 let ``The color with an intersection behind the ray`` () =
     let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-    let m = {material() with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
+    let m = {Material.Default with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
     let t = Scaling(0.5, 0.5, 0.5)
     let s1 = {sphere with Material = Some m}
     let s2 = {sphere with Transform = Some t}
     let outer = {s1 with Material = Some {m with Ambient = 1.0}}
-    let inner = {s2 with Material = Some {material() with Ambient = 1.0}}
+    let inner = {s2 with Material = Some {Material.Default with Ambient = 1.0}}
     let w = {Objects = [outer; inner]; LightSource = light}
     let r = ray (pointu<world>(0.0, 0.0, 0.75)) (vector(0.0, 0.0, -1.0))
     colorAt w r |> should equal inner.Material.Value.Color

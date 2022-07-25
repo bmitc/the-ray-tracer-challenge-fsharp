@@ -5,6 +5,7 @@
 #load "../PPM.fs"
 #load "../Matrix.fs"
 #load "../Transformation.fs"
+#load "../Object.fs"
 #load "../Ray.fs"
 #load "../LightAndShading.fs"
 #load "../Scene.fs"
@@ -16,6 +17,7 @@ open RayTracer.Canvas
 open RayTracer.PPM
 open RayTracer.Matrix
 open RayTracer.Transformation
+open RayTracer.Object
 open RayTracer.Ray
 open RayTracer.LightAndShading
 open RayTracer.Scene

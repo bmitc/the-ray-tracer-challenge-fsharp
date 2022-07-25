@@ -15,6 +15,7 @@
     <Compile Include="Canvas.fs" />
     <Compile Include="Matrix.fs" />
     <Compile Include="Transformation.fs" />
+    <Compile Include="Object.fs" />
     <Compile Include="Ray.fs" />
     <Compile Include="LightAndShading.fs" />
     <Compile Include="Scene.fs" />

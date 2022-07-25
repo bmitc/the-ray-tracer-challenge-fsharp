@@ -115,3 +115,11 @@ let ``The cross product of two vectors`` () =
     let b = vector(2.0, 3.0, 4.0)
     cross a b |> should equal (vector(-1.0, 2.0, -1.0))
     cross b a |> should equal (vector(1.0, -2.0, 1.0))
+
+[<Fact>]
+let ``Reflecting a vector approaching at 45 degrees`` () =
+    reflect (vector(1.0, -1.0, 0.0)) (vector(0.0, 1.0, 0.0)) |> should equal (vector(1.0, 1.0, 0.0))
+
+[<Fact>]
+let ``Reflecting a vector off a slanted surface`` () =
+    reflect (vector(0.0, -1.0, 0.0)) (vector(sqrt(2.0)/2.0, sqrt(2.0)/2.0, 0.0)) |> should equal (vector(1.0, 0.0, 0.0))

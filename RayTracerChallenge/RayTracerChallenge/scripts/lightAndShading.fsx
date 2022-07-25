@@ -7,6 +7,7 @@ open RayTracer.Tuples
 open RayTracer.Color
 open RayTracer.Canvas
 open RayTracer.PPM
+open RayTracer.Object
 open RayTracer.Ray
 open RayTracer.LightAndShading
 
@@ -18,7 +19,7 @@ let pixelSize = wallSize / canvasSize
 let halfSize = wallSize / 2.0
 let canvas = Canvas(canvasSize)
 
-let m = {material() with Color = color(0.0, 0.5, 1.0)}
+let m = {Material.Default with Color = color(0.0, 0.5, 1.0)}
 let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
 
 let compute x y =

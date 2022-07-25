@@ -4,6 +4,7 @@ open Xunit
 open FsUnit.Xunit
 open RayTracer.Tuples
 open RayTracer.Transformation
+open RayTracer.Object
 open RayTracer.Ray
 
 [<Fact>]

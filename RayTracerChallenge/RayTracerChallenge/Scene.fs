@@ -6,6 +6,7 @@ open Color
 open Canvas
 open Matrix
 open Transformation
+open Object
 open Ray
 open LightAndShading
 
@@ -87,7 +88,7 @@ let shadeHit world (computation: Computation<world>) =
     let material =
         match computation.Object.Material with
         | Some m -> m
-        | None   -> material()
+        | None   -> Material.Default
     lighting material
              world.LightSource
              computation.OverPoint

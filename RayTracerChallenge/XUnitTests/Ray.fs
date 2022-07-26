@@ -116,12 +116,6 @@ let ``Intersecting a scaled sphere with a ray`` () =
     let xs = intersect r s
     List.map (fun x -> x.Time) xs |> should equal [3.0; 7.0]
 
-// The following tests depart from the book. This is because the book describes an OOP approach,
-// whereas here, shapes are described as a discriminated union and then an object is defined to
-// contain a shape and optional material and optional transform. Due to this existing abstraction,
-// the refactor described in the book doesn't need to take place. New shapes will simply need to
-// add a pattern match case to the intersect function.
-
 [<Fact>]
 let ``Intersecting a translated sphere with a ray`` () =
     let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
@@ -129,8 +123,14 @@ let ``Intersecting a translated sphere with a ray`` () =
     let xs = intersect r s
     xs |> should be Empty
 
+// The following tests depart from the book. This is because the book describes an OOP approach,
+// whereas here, shapes are described as a discriminated union and then an object is defined to
+// contain a shape and optional material and optional transform. Due to this existing abstraction,
+// the refactor described in the book doesn't need to take place. New shapes will simply need to
+// add a pattern match case to the intersect function.
+
 [<Fact>]
-let ``Intersection a scaled shape with a ray`` () =
+let ``Intersecting a scaled shape with a ray`` () =
     let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     let s = { sphere with Transform = Some (Scaling (2.0, 2.0, 2.0)) }
     localRay r s |> should equal (ray (point(0.0, 0.0, -2.5)) (vector(0.0, 0.0, 0.5)))
@@ -140,18 +140,6 @@ let ``Intersecting a translated shape with a ray`` () =
     let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     let s = { sphere with Transform = Some (Translation (5.0, 0.0, 0.0)) }
     localRay r s |> should equal (ray (point(-5.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0)))
-
-[<Fact>]
-let ``Computing the normal on a translated shape`` () =
-    let s = { sphere with Transform = Some (Translation (0.0, 1.0, 0.0)) }
-    normalAt s (pointu<world>(0.0, 1.70711, -0.70711)) |> should equal (vector(0.0, 0.70711, -0.70711))
-
-[<Fact>]
-let ``The normal of a plane is constant everywhere`` () =
-    let p = plane
-    normalAt p (pointu<world>(0.0, 0.0, 0.0)) |> should equal (vector(0.0, 1.0, 0.0))
-    normalAt p (pointu<world>(10.0, 0.0, -10.0)) |> should equal (vector(0.0, 1.0, 0.0))
-    normalAt p (pointu<world>(-5.0, 0.0, 150.0)) |> should equal (vector(0.0, 1.0, 0.0))
 
 [<Fact>]
 let ``Intersect with a ray parallel to the plane`` () =
@@ -188,28 +176,3 @@ let ``Intersecting a translated sphere with a zero ray`` () =
     let s = sphere
     let xs = intersect r s
     xs |> should be Empty
-
-[<Fact>]
-let ``The normal of a plane rotated about the X axis`` () =
-    let point = pointu<world>(0.0, 0.0, 0.0)
-    normalAt {plane with Transform = Some( Rotation (X, pi/2.0))} point |> should equal (vector(0.0, 0.0, 1.0))
-
-[<Fact>]
-let ``The normal of a plane rotated about the Y axis`` () =
-    let point = pointu<world>(0.0, 0.0, 0.0)
-    normalAt {plane with Transform = Some( Rotation (Y, pi/2.0))} point |> should equal (vector(0.0, 1.0, 0.0))
-
-[<Fact>]
-let ``The normal of a plane rotated about the Z axis`` () =
-    let point = pointu<world>(0.0, 0.0, 0.0)
-    normalAt {plane with Transform = Some( Rotation (Z, -pi/2.0))} point |> should equal (vector(1.0, 0.0, 0.0))
-
-[<Fact>]
-let ``The normal of a scaled plane remains unchanged`` () =
-    let point = pointu<world>(0.0, 0.0, 0.0)
-    normalAt {plane with Transform = Some(Scaling (1.0, 2.0, 3.0))} point |> should equal (vector(0.0, 1.0, 0.0))
-
-[<Fact>]
-let ``The normal of a translated plane remains unchanged`` () =
-    let point = pointu<world>(0.0, 0.0, 0.0)
-    normalAt {plane with Transform = Some(Translation (0.0, 2.0, 0.0))} point |> should equal (vector(0.0, 1.0, 0.0))

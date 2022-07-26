@@ -55,7 +55,7 @@ let sphere = shape Sphere
 let plane = shape PlaneXZ
 
 /// Computes the normal vector of the point in object space
-let private localNormal obj (point: Point<object>) =
+let localNormal obj (point: Point<object>) =
     match obj.Shape with
     | Sphere  -> point - pointu<object>(0.0, 0.0, 0.0) // subtract the center of the sphere from the point on the sphere
     | PlaneXZ -> vector(0.0, 1.0, 0.0)                 // the normal of an XZ plane is constant and points in the Y direction

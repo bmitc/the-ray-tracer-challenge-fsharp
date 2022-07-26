@@ -10,19 +10,22 @@ module RayTracer.Utilities
 /// Represents a point in pixels
 [<Measure>] type pixels
 
-/// Represents a point in world units
+/// Represents a point in world space
 [<Measure>] type world
 
+/// Represents a point in object space
+[<Measure>] type object
+
 /// Removes any units of measure
-let inline removeUnits (x: float<_>) = float x
+let inline removeUnits (x: float<'Unit>) = float x
 
 /// Removes the radians units of measure from the float
 let inline removeRadians (x: float<radians>) = x/1.0<radians>
 
-/// Cast the given float to have the given units of measure
+/// Cast the float to have the given units of measure
 let inline castFloatUnit<[<Measure>] 'Unit> (x: float) = LanguagePrimitives.FloatWithMeasure<'Unit> x
 
-/// Cast the given int to have the given units of measure
+/// Cast the integer to have the given units of measure
 let inline castIntUnit<[<Measure>] 'Unit> (x: int) = LanguagePrimitives.Int32WithMeasure<'Unit> x
 
 /// Converts an integer to a float and then casts to a float with the given units

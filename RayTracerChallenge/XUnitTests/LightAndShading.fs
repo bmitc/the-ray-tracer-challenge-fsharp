@@ -14,16 +14,6 @@ let ``A point light has a position and intensity`` () =
     let light = {Position = position; Intensity = intensity}
     (light.Position, light.Intensity) |> should equal (position, intensity)
 
-[<Fact>]
-let ``The default material`` () =
-    let m = Material.Default
-    (m.Color, m.Ambient, m.Diffuse, m.Specular, m.Shininess) |> should equal (color(1.0, 1.0, 1.0), 0.1, 0.9, 0.9, 200.0)
-
-// "A sphere has a default material"
-// "A sphere may be assigned a material"
-// These tests are not implemented because we do not assign materials directly to shapes as the book does.
-// Instead, an Object contains a shape along with a transform and material, both optional.
-
 let m = Material.Default
 let position = point(0.0, 0.0, 0.0)
 

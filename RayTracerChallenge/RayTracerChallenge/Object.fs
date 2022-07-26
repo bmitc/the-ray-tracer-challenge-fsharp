@@ -6,7 +6,11 @@ open Color
 open Transformation
 
 /// Represents various types of shapes to be ray traced
-type Shape = Sphere
+type Shape =
+    /// An abstract sphere. The size and location of the sphere is adjusted by applying transformations.
+    | Sphere
+    /// An abstract XZ plane. The orientation and origin of the plane is adjusted by applying transformations.
+    | PlaneXZ
 
 /// A record to hold various material properties
 type Material =
@@ -41,15 +45,36 @@ type Object =
       /// An object may have a material that affects its appearance or not
       Material  : Material option }
 
+/// Convenience function for a default shape object with no transform or material
+let shape shape = {Shape = shape; Transform = None; Material = None}
+
 /// Convenience value for a default sphere object with no transform or material
-let sphere = {Shape = Sphere; Transform = None; Material = None}
+let sphere = shape Sphere
+
+/// Convenience value for a default plane object with no transform or material
+let plane = shape PlaneXZ
+
+/// Computes the normal vector of the point in object space
+let private localNormal obj (point: Point<object>) =
+    match obj.Shape with
+    | Sphere  -> point - pointu<object>(0.0, 0.0, 0.0) // subtract the center of the sphere from the point on the sphere
+    | PlaneXZ -> vector(0.0, 1.0, 0.0)                 // the normal of an XZ plane is constant and points in the Y direction
+    |> normalize
+
+let castWorldToObject (point: Point<world>) =
+    Point<_>.mapElementwise (fun e -> (e / 1.0<world>) * 1.0<object>) point
+
+let private _castObjectToWorld (point: Point<object>) =
+    Point<_>.mapElementwise (fun e -> (e / 1.0<object>) * 1.0<world>) point
 
 /// Calculates the surface normal of the object's shape, applying the object's transform
 /// if it contains one, at the given world point
 let normalAt object (worldPoint: Point<world>) =
     match object.Transform with
-    | None   -> normalize (worldPoint - pointu<world>(0.0, 0.0, 0.0))               // the object is located at the origin
-    | Some t -> let objectPoint = applyTransform (inverse t) worldPoint             // convert from world space to object space
-                let objectNormal = objectPoint - pointu<world>(0.0, 0.0, 0.0)       // compute the normal in object space
+    | None   -> localNormal object (castWorldToObject worldPoint)                   // the object is untransformed
+    | Some t -> let objectPoint = worldPoint                                        // convert from world space to object space
+                                  |> applyTransform (inverse t)
+                                  |> castWorldToObject
+                let objectNormal = localNormal object objectPoint                   // compute the normal in object space
                 let worldNormal = applyTransposedTransform (inverse t) objectNormal // convert back to world space
                 normalize worldNormal                                               // return the normal normalized

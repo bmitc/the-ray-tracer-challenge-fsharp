@@ -41,7 +41,7 @@ let ``The default world`` () =
 [<Fact>]
 let ``Intersect a world with a ray`` () =
     let w = defaultWorld()
-    let r = ray (point(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
+    let r = ray (pointu<world>(0.0, 0.0, -5.0)) (vector(0.0, 0.0, 1.0))
     let xs = intersectWorld w r
     xs |> List.map (fun x -> x.Time) |> should equal [4.0; 4.5; 5.5; 6.0]
 

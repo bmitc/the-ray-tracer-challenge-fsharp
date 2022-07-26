@@ -5,6 +5,28 @@ open Utilities
 open Tuples
 open Matrix
 
+(* The ray tracer in the book is oriented via the left-hand rule, rather than the more typical right-hand rule.
+   Thus, images are displayed on an x-y plane, oriented normally, and the positive z direction goes into the image.
+   This affects the transformations. For example, rotations also follow the left-hand rule. If you put your left
+   thumb along the positive direction, then your fingers curl in the positive direction of rotation.
+
+                                                   y      z
+                                                   ^      ^
+                                                   |     /
+                                                   |    /
+                                                   |   /
+                                                   |  /
+                                                   | /
+                                                   |/
+                               --------------------/--------------------> x
+                                                  /|
+                                                 / |
+                                                /  |
+                                               /   |
+                                              /    |
+                                             /     |
+*)
+
 /// Represents an axis in 3D space
 type Axis =
     /// X-axis

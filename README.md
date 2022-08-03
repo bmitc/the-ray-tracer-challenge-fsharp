@@ -335,3 +335,56 @@ writeToPPM image (System.IO.Path.Combine(__SOURCE_DIRECTORY__, "../../../images/
 </details>
 
 ![scene](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/blob/main/images/shadows.png)
+
+### [Chapter 9: Planes: Putting it Together](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/blob/main/RayTracerChallenge/RayTracerChallenge/scripts/planes.fsx)
+
+<details>
+<summary>F# script to generate below scene</summary>
+
+```fsharp
+//******************************************
+// Scene objects
+//******************************************
+
+let floor = {plane with Transform = Some (Rotation (Z, 0.0<radians>));
+                        Material = Some {Material.Default with Color = color(0.5, 0.9, 0.9);
+                                                               Specular = 0.0}}
+
+let wall = {plane with Transform = Some (Combination [Translation (0.0, 0.0, 5.0); Rotation (Y, -pi/4.0); Rotation (Z, pi/2.0)]);
+                       Material = Some {Material.Default with Color = color(1.0, 1.0, 1.0);
+                                                              Specular = 0.0}}
+
+let middle = {sphere with Transform = Some (Translation(-0.5, 1.0, 0.5));
+                          Material = Some {Material.Default with Color = color(0.1, 1.0, 0.5);
+                                                                 Diffuse = 0.7;
+                                                                 Specular = 0.3}}
+
+let right = {sphere with Transform = Some (Combination [Translation(1.5, 0.5, -0.5); Scaling(0.5, 0.5, 0.5)]);
+                         Material = Some {Material.Default with Color = color(0.5, 1.0, 0.1);
+                                                                Diffuse = 0.7;
+                                                                Specular = 0.3}}
+
+let left = {sphere with Transform = Some (Combination [Translation(-1.5, 0.33, -0.75); Scaling(0.33, 0.33, 0.33)]);
+                        Material = Some {Material.Default with Color = color(0.0, 0.5, 0.8);
+                                                               Diffuse = 0.7;
+                                                               Specular = 0.3}}
+
+//******************************************
+// World
+//******************************************
+
+let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+let world = {Objects = [floor; wall; middle; left; right]; LightSource = light}
+
+let camera = {camera(2000<pixels>, 1000<pixels>, pi/1.5)
+              with Transform = viewTransform (point(0.0, 1.5, -5.0)) (point(0.0, 1.0, 0.0)) (vector(0.0, 1.0, 0.0)) }
+
+#time
+let image = render camera world
+#time
+
+writeToPPM image (System.IO.Path.Combine(__SOURCE_DIRECTORY__, "../../../images/planes.ppm"))
+```
+</details>
+
+![scene](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/blob/main/images/planes.png)

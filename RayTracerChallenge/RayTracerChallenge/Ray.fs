@@ -62,7 +62,7 @@ let intersect (ray: Ray<world>) (object: Object) =
                  // a non-zero direction in J.
                  elif abs(r.Origin.Y |> removeUnits) > epsilon && abs(r.Direction.J) > epsilon
                  // Solve y = origin_Y + t * direction_J = 0 (ray parameterization) for t
-                 then let t = (-r.Origin.Y / ray.Direction.J) |> removeUnits
+                 then let t = (-r.Origin.Y / r.Direction.J) |> removeUnits
                       [{Object = object; Time = t}]
                  else []
 

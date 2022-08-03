@@ -176,3 +176,9 @@ let ``Intersecting a translated sphere with a zero ray`` () =
     let s = sphere
     let xs = intersect r s
     xs |> should be Empty
+
+[<Fact>]
+let ``A ray intersecting a rotated plane from above`` () =
+    let p = { plane with Transform = Some (Rotation (Z, pi/4.0)) }
+    let r = ray (pointu<world>(1.0, 0.0, 1.0)) (vector(-1.0, 0.0, 0.0))
+    intersect r p |> should equal [{Object = p; Time = 1.0}]

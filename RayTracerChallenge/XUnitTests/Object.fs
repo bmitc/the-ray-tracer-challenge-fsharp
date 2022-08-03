@@ -105,6 +105,11 @@ let ``The normal of a plane rotated about the Z axis`` () =
     normalAt {plane with Transform = Some( Rotation (Z, -pi/2.0))} point |> should equal (vector(1.0, 0.0, 0.0))
 
 [<Fact>]
+let ``The normal of a plane partially rotated about the Z axis`` () =
+    let point = pointu<world>(0.0, 0.0, 1.0)
+    normalAt {plane with Transform = Some( Rotation (Z, pi/4.0))} point |> should equal (normalize (vector(-1.0, 1.0, 0.0)))
+
+[<Fact>]
 let ``The normal of a scaled plane remains unchanged`` () =
     let point = pointu<world>(0.0, 0.0, 0.0)
     normalAt {plane with Transform = Some(Scaling (1.0, 2.0, 3.0))} point |> should equal (vector(0.0, 1.0, 0.0))

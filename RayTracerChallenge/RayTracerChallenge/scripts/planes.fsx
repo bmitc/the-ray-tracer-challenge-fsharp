@@ -15,10 +15,11 @@ open RayTracer.Scene
 // Scene objects
 //******************************************
 
-let floor = {plane with Material = Some {Material.Default with Color = color(0.5, 0.9, 0.9);
+let floor = {plane with Transform = Some (Rotation (Z, 0.0<radians>));
+                        Material = Some {Material.Default with Color = color(0.5, 0.9, 0.9);
                                                                Specular = 0.0}}
 
-let wall = {plane with Transform = Some (Combination [Translation (-1.0, 0.0, 0.0); Rotation (Y, -pi/4.0); Rotation (Z, pi/2.0)]);
+let wall = {plane with Transform = Some (Combination [Translation (0.0, 0.0, 5.0); Rotation (Y, -pi/4.0); Rotation (Z, pi/2.0)]);
                        Material = Some {Material.Default with Color = color(1.0, 1.0, 1.0);
                                                               Specular = 0.0}}
 
@@ -42,9 +43,9 @@ let left = {sphere with Transform = Some (Combination [Translation(-1.5, 0.33, -
 //******************************************
 
 let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
-let world = {Objects = [floor; wall; middle; left; right; {middle with Transform = None}]; LightSource = light}
+let world = {Objects = [floor; wall; middle; left; right]; LightSource = light}
 
-let camera = {camera(500<pixels>, 250<pixels>, pi/1.5)
+let camera = {camera(2000<pixels>, 1000<pixels>, pi/1.5)
               with Transform = viewTransform (point(0.0, 1.5, -5.0)) (point(0.0, 1.0, 0.0)) (vector(0.0, 1.0, 0.0)) }
 
 #time

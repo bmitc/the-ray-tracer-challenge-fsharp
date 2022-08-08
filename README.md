@@ -5,6 +5,9 @@ This repository is an F# implementation of the ray tracer found in [*The Ray Tra
 
 The book is written from an agnostic point of view regarding programming languages, although the suggested tests and implementations do lean towards mutability and OOP type of languages. This implementation has been made to be as idiomatic to F# as possible, making full use of F#'s functional-first but multiparadigm nature. Functional programming is mixed with OOP naturally, although immutability is still highly preferred.
 
+Latest example image based upon current implementation (see the [Example Renders](#example-renders) section for more examples and scripts):
+![scene](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/blob/main/images/patterns.png)
+
 ## A note on implementation
 
 Domain-driven design is heavily used in this implementation, where F# types of discriminated unions, records, and sometimes classes are used to model all of the various components of the ray tracer. Probably the largest departure from the book, and an excellent example of functional programming, is defining 3D transformations using a discriminated union:

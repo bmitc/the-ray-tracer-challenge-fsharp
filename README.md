@@ -72,7 +72,7 @@ Each one of the transformation functions simply creates a transformation of the 
 
 ## Example renders
 
-Below you'll find code exerpts that generate the displayed image, and these are the examples found in the various chapters of the book. The ray tracer implementation is not yet complete but is fully working through Chapter 8: Shadows.
+Below you'll find code exerpts that generate the displayed image, and these are the examples found in the various chapters of the book. The ray tracer implementation is not yet complete but is fully working through Chapter 10: Patterns.
 
 ### [Chapter 2: Drawing on a Canvas: Putting it Together](https://github.com/bmitc/the-ray-tracer-challenge-fsharp/blob/main/RayTracerChallenge/RayTracerChallenge/scripts/projectile.fsx)
 

@@ -33,7 +33,7 @@ let transform transform ray =
 
 /// Transforms the given ray in world space into the object's local space, using the object's transform
 let localRay (ray: Ray<world>) object : Ray<object> =
-    let objectRay = { Origin = castWorldToObject ray.Origin; Direction = ray.Direction }
+    let objectRay = { Origin = convertPointUnits<world, object> ray.Origin; Direction = ray.Direction }
     match object.Transform with
     | Some t -> transform (inverse t) objectRay
     | None   -> objectRay

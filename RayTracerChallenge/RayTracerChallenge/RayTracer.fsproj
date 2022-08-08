@@ -17,6 +17,7 @@
     <None Include="scripts\scene.fsx" />
     <None Include="scripts\shadows.fsx" />
     <None Include="scripts\planes.fsx" />
+    <None Include="scripts\patterns.fsx" />
     <Compile Include="Utilities.fs" />
     <Compile Include="Tuples.fs" />
     <Compile Include="Color.fs" />
@@ -24,6 +25,7 @@
     <Compile Include="PPM.fs" />
     <Compile Include="Matrix.fs" />
     <Compile Include="Transformation.fs" />
+    <Compile Include="Pattern.fs" />
     <Compile Include="Object.fs" />
     <Compile Include="Ray.fs" />
     <Compile Include="LightAndShading.fs" />

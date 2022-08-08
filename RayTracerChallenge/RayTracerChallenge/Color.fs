@@ -91,19 +91,28 @@ let clampNumber min max number =
 let clamp min max c =
     Color.mapElementwise (clampNumber min max) c
 
-// Useful color constants
+/// Blends two colors by averaging them together
+let blend (color1: Color) (color2: Color) =
+    (color1 + color2) / 2.0
 
-/// Black color constant
-let black = color (0.0, 0.0, 0.0)
+//**********************************************************************
+//***** Color constants ************************************************
+//**********************************************************************
 
-/// White color constant
-let white = color (1.0, 1.0, 1.0)
-
-/// Red color constant
-let red   = color (1.0, 0.0, 0.0)
-
-/// Green color constant
-let green = color (0.0, 1.0, 0.0)
-
-/// Blue color constant
-let blue  = color (0.0, 0.0, 1.0)
+let black      = color (  0,   0,   0)
+let white      = color (  1,   1,   1)
+let red        = color (  1,   0,   0)
+let green      = color (  0,   1,   0)
+let blue       = color (  0,   0,   1)
+let lightGray  = color (211, 211, 211) / 255.0
+let gray       = color (128, 128, 128) / 255.0
+let violet     = color (238, 130, 238) / 255.0
+let skyBlue    = color (135, 206, 235) / 255.0
+let paleGreen  = color (152, 251, 152) / 255.0
+let purple     = color (128,   0, 128) / 255.0
+let royalBlue  = color ( 65, 105, 225) / 255.0
+let powderBlue = color (176, 224, 230) / 255.0
+let yellow     = color (255, 255,   0) / 255.0
+let pink       = color (255, 192, 203) / 255.0
+let deepPink   = color (255,  20, 147) / 255.0
+let hotPink    = color (255, 105, 180) / 255.0

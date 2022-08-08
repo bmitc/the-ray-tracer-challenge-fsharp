@@ -54,18 +54,21 @@ type ShearComponent =
 /// Represents a 3D transform
 type Transform =
     /// Translation moves a point via addition of the components to the point's components
-    | Translation of x: float * y: float * z: float
+    | Translation  of x: float * y: float * z: float
     /// Scaling moves a point via multiplication of the components with the point's components
-    | Scaling     of x: float * y: float * z: float
+    | Scaling      of x: float * y: float * z: float
+    /// Scaling moves a point via multiplication of the components with the point's components.
+    /// This scales the point's coordinates equally using the single scale factor.
+    | ScalingEqual of scaleFactor: float
     /// Reflection moves a point to the other side of the given access, keeping the distance from the axis
-    | Reflection  of Axis
+    | Reflection   of Axis
     /// Rotation moves a point by rotating by an angle, in radians, relative to an axis
-    | Rotation    of Axis * angle: float<radians>
-    /// Shearing, or skew, makes straight lines slanted by moving a component in proportion to another component
-    | Shearing    of ShearComponent * proportion: float
+    | Rotation     of Axis * angle: float<radians>
+    /// Shearing,  or skew, makes straight lines slanted by moving a component in proportion to another component
+    | Shearing     of ShearComponent * proportion: float
     /// Combination chains together several transforms. Transforms listed left to right but will be applied
     /// right to left.
-    | Combination of Transform list
+    | Combination  of Transform list
 
 /// Get the matrix that represents the transform
 let rec getTransformMatrix transform =
@@ -78,6 +81,7 @@ let rec getTransformMatrix transform =
                                                    [0.0;  y ; 0.0; 0.0];
                                                    [0.0; 0.0;  z ; 0.0];
                                                    [0.0; 0.0; 0.0; 1.0]])
+    | ScalingEqual factor -> getTransformMatrix (Scaling (factor, factor, factor))
     | Reflection X        -> Matrix(4, 4, array2D [[-1.0; 0.0; 0.0; 0.0];
                                                    [ 0.0; 1.0; 0.0; 0.0];
                                                    [ 0.0; 0.0; 1.0; 0.0];
@@ -126,6 +130,7 @@ let rec inverse transform =
     match transform with
     | Translation (x, y, z)  -> Translation (-x, -y, -z)
     | Scaling (x, y, z)      -> Scaling (reciprocal x, reciprocal y, reciprocal z)
+    | ScalingEqual factor    -> ScalingEqual (reciprocal factor)
     | Reflection axis        -> Reflection axis
     | Rotation (axis, r)     -> Rotation (axis, -r)
     | Shearing (c, p)        -> Shearing (c, -p)

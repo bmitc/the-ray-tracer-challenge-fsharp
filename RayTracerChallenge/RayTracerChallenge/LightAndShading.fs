@@ -1,8 +1,10 @@
 ﻿/// Functions and types for calculating light and shading of shapes
 module RayTracer.LightAndShading
 
+open Utilities
 open Tuples
 open Color
+open Pattern
 open Object
 
 /// Represents a light source at a point and with an intensity
@@ -23,9 +25,14 @@ type Light<[<Measure>] 'PointUnit> =
 
 
 /// Calculates a color according to the Phong reflection model
-let lighting material light (point: Point<_>) eyev normalv inShadow =
+let lighting material object (light: Light<world>) (point: Point<world>) eyev normalv inShadow =
+    let materialColor =
+        match material.Pattern with
+        | Some pattern -> patternAtObject pattern object point
+        | None         -> material.Color
+
     // Combine the surface color with the light's color/intensity
-    let effectiveColor = material.Color * light.Intensity
+    let effectiveColor = materialColor * light.Intensity
 
     // Find the direction to the light source
     let lightv = normalize(light.Position - point)

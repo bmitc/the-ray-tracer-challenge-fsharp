@@ -6,6 +6,7 @@ open RayTracer.Utilities
 open RayTracer.Tuples
 open RayTracer.Color
 open RayTracer.Transformation
+open RayTracer.Pattern
 open RayTracer.Object
 
 [<Fact>]
@@ -84,6 +85,32 @@ let ``The normal of a plane is constant everywhere`` () =
     localNormal p (pointu<object>(0.0, 0.0, 0.0)) |> should equal (vector(0.0, 1.0, 0.0))
     localNormal p (pointu<object>(10.0, 0.0, -10.0)) |> should equal (vector(0.0, 1.0, 0.0))
     localNormal p (pointu<object>(-5.0, 0.0, 150.0)) |> should equal (vector(0.0, 1.0, 0.0))
+
+[<Fact>]
+let ``Stripes with an object transformation`` () =
+    let object = { sphere with Transform = Some (Scaling (2, 2, 2)) }
+    let pattern = stripe white black None
+    patternAtObject pattern object (pointu<world>(1.5, 0, 0)) |> should equal white
+
+[<Fact>]
+let ``Stripes with a pattern transformation`` () =
+    let object = sphere
+    let pattern = stripe white black (Some (Scaling (2, 2, 2)))
+    patternAtObject pattern object (pointu<world>(1.5, 0, 0)) |> should equal white
+
+[<Fact>]
+let ``Stripes with both an object and a pattern transformation`` () =
+    let object = { sphere with Transform = Some (Scaling (2, 2, 2)) }
+    let pattern = stripe white black (Some (Translation (0.5, 0, 0)))
+    patternAtObject pattern object (pointu<world>(2.5, 0, 0)) |> should equal white
+
+// "A pattern with object transformation"
+// "A pattern with a pattern transformation"
+// "A pattern with both an object and a pattern transformation"
+// These tests are not implemented because the book takes an object-oriented approach and
+// creates a test pattern, which is not needed here. It would dirty up the more functional
+// Pattern record defined here and would only test basic creation and destructuring of
+// records and discriminated unions.
 
 //*******************************
 // Additional tests

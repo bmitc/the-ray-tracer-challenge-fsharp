@@ -90,6 +90,7 @@ let shadeHit world (computation: Computation<world>) =
         | Some m -> m
         | None   -> Material.Default
     lighting material
+             computation.Object
              world.LightSource
              computation.OverPoint
              computation.Eye
@@ -136,37 +137,37 @@ type Camera =
 
     with
 
-        /// A default camera
-        static member Default =
-            { HorizontalSize = 0<pixels>
-              VerticalSize   = 0<pixels>
-              FieldOfView    = 0.0<radians>
-              Transform      = Matrix(4, 4, Identity) }
+    /// A default camera
+    static member Default =
+        { HorizontalSize = 0<pixels>
+          VerticalSize   = 0<pixels>
+          FieldOfView    = 0.0<radians>
+          Transform      = Matrix(4, 4, Identity) }
 
-        /// A value used to compute the HalfWidth and HalfHeight of the camera's canvas
-        /// It is the width of half of the canvas one world unit away from the camera
-        member private this.HalfView =
-            castFloatUnit<world> (tan(removeRadians(this.FieldOfView) / 2.0))
+    /// A value used to compute the HalfWidth and HalfHeight of the camera's canvas
+    /// It is the width of half of the canvas one world unit away from the camera
+    member private this.HalfView =
+        castFloatUnit<world> (tan(removeRadians(this.FieldOfView) / 2.0))
 
-        /// The aspect ratio, the horizontal size over the vertical size, of the camera
-        member private this.AspectRatio =
-            (floatPreserveUnits this.HorizontalSize) / (floatPreserveUnits this.VerticalSize)
+    /// The aspect ratio, the horizontal size over the vertical size, of the camera
+    member private this.AspectRatio =
+        (floatPreserveUnits this.HorizontalSize) / (floatPreserveUnits this.VerticalSize)
 
-        /// 
-        member this.HalfWidth =
-            if this.AspectRatio >= 1.0
-            then this.HalfView
-            else this.HalfView * this.AspectRatio
+    /// 
+    member this.HalfWidth =
+        if this.AspectRatio >= 1.0
+        then this.HalfView
+        else this.HalfView * this.AspectRatio
 
-        /// 
-        member this.HalfHeight =
-            if this.AspectRatio >= 1.0
-            then this.HalfView / this.AspectRatio
-            else this.HalfView
+    /// 
+    member this.HalfHeight =
+        if this.AspectRatio >= 1.0
+        then this.HalfView / this.AspectRatio
+        else this.HalfView
 
-        /// Conversion factor to go from pixels to world units
-        member this.PixelSize = (this.HalfWidth * 2.0) / (floatPreserveUnits this.HorizontalSize)
-        // Pixels are square, so only need to use horizontal or vertical values
+    /// Conversion factor to go from pixels to world units
+    member this.PixelSize = (this.HalfWidth * 2.0) / (floatPreserveUnits this.HorizontalSize)
+    // Pixels are square, so only need to use horizontal or vertical values
 
 /// Convenience function for creating a camera with a default view transform
 let camera (horizontalPixels, verticalPixels, fieldOfView) =

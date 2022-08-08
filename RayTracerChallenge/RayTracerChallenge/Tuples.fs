@@ -158,6 +158,11 @@ let pointu<[<Measure>] 'Unit> (x, y, z) = Point<'Unit>.mapElementwise castFloatU
 /// Convenience function for creating a Point record from floats with no units of measure
 let point ((x, y, z): float<'Unit> * float<'Unit> * float<'Unit>) = { X = x; Y = y; Z = z }
 
+/// Converts a point from the old units to the new units
+let convertPointUnits<[<Measure>] 'OldUnit, [<Measure>] 'NewUnit>
+    (point: Point<'OldUnit>) : Point<'NewUnit> =
+        Point<'OldUnit>.mapElementwise convertUnits<'OldUnit, 'NewUnit> point
+
 /// Sum all elements of a vector to a single number
 let sumVector v = v.I + v.J + v.K
 

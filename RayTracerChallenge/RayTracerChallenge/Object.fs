@@ -92,4 +92,4 @@ let patternAtObject (pattern: Pattern) object (point: Point<world>) =
         | Some t -> objectPoint                                    // convert from object space to pattern space
                     |> applyTransform (inverse t)
                     |> convertPointUnits<object, pattern>
-    patternAt pattern patternPoint                                 // get the pattern color while in pattern space
+    patternAt pattern objectPoint                                 // get the pattern color while in pattern space

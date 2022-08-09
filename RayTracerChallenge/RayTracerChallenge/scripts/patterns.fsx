@@ -22,16 +22,18 @@ let ground = {plane  with Transform = Some (Rotation (Z, 0.0<radians>));
 
 let wall   = {plane  with Transform = Some (Combination [Translation (0.0, 0.0, 5.0); Rotation (Y, -pi/4.0); Rotation (Z, pi/2.0)])
                           Material  = Some {Material.Default with Specular  = Material.Default.Specular
-                                                                  Pattern   = Some (stripe white hotPink (Some (Combination [ScalingEqual 0.7;
-                                                                                                                             Rotation (Y, pi/4.0)])))}}
+                                                                  Pattern   = Some (Perturb (Blend (stripe white hotPink (Some (Combination [ScalingEqual 0.7;
+                                                                                                                                             Rotation (Y, pi/4.0)])),
+                                                                                                    stripe white hotPink (Some (Combination [ScalingEqual 0.7;
+                                                                                                                                             Rotation (Y, 3.0*pi/4.0)])))))}}
 
 let middle = {sphere with Transform = Some (Translation(-0.5, 1.0, 0.5));
                           Material  = Some {Material.Default with Diffuse   = 0.7
                                                                   Specular  = 0.3
                                                                   Shininess = 30
-                                                                  Pattern   = Some (ring paleGreen purple (Some (Combination [Rotation (Z, pi/4.0);
-                                                                                                                              Rotation (X, pi/4.0);
-                                                                                                                              ScalingEqual 0.09])))}}
+                                                                  Pattern   = Some (Perturb (ring paleGreen purple (Some (Combination [Rotation (Z, pi/4.0);
+                                                                                                                                       Rotation (X, pi/4.0);
+                                                                                                                                       ScalingEqual 0.09]))))}}
 
 let right  = {sphere with Transform = Some (Combination [Translation(1.5, 0.5, -0.5); ScalingEqual 0.5])
                           Material  = Some {Material.Default with Diffuse   = 0.7
@@ -54,8 +56,8 @@ let left   = {sphere with Transform = Some (Combination [Translation(-1.5, 0.33,
 let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
 let world = {Objects = [ground; wall; middle; left; right]; LightSource = light}
 
-let camera = {camera(2000<pixels>, 1000<pixels>, pi/3.0)
-              with Transform = viewTransform (point(0.0, 1.5, -5.0)) (point(0.0, 1.0, 0.0)) (vector(0.0, 1.0, 0.0)) }
+let camera = { camera(2000<pixels>, 1000<pixels>, pi/3.0)
+               with Transform = viewTransform (point(0.0, 1.5, -5.0)) (point(0.0, 1.0, 0.0)) (vector(0.0, 1.0, 0.0)) }
 
 #time
 let image = render camera world

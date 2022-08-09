@@ -1,5 +1,6 @@
 ﻿#load "../Utilities.fs"
 #load "../Tuples.fs"
+#load "../Perlin.fs"
 #load "../Color.fs"
 #load "../Canvas.fs"
 #load "../PPM.fs"
@@ -13,6 +14,7 @@
 
 open RayTracer.Utilities
 open RayTracer.Tuples
+open RayTracer.Perlin
 open RayTracer.Color
 open RayTracer.Canvas
 open RayTracer.PPM

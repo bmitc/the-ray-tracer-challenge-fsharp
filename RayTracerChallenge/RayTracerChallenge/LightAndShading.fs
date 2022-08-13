@@ -8,6 +8,7 @@ open Pattern
 open Object
 
 /// Represents a light source at a point and with an intensity
+[<Struct>]
 type Light<[<Measure>] 'PointUnit> =
     { /// The location of the light's point source
       Position  : Point<'PointUnit>

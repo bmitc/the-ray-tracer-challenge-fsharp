@@ -35,7 +35,7 @@ type ITuple<'Tuple, [<Measure>] 'Unit> =
     abstract member FromTupleArray : float<'Unit>[] -> 'Tuple
 
 /// Represents a 3D vector
-[<CustomEquality; NoComparison>]
+[<Struct; CustomEquality; NoComparison>]
 type Vector = { I: float; J: float; K: float } with
 
     /// Maps the operation to each element of the vector
@@ -89,10 +89,10 @@ type Vector = { I: float; J: float; K: float } with
         member _.FromTupleArray array = { I = array.[0]; J = array.[1]; K = array.[2] }
 
 /// Convenience function for creating a Vector record
-let vector (i,j,k) = { I = i; J = j; K = k }
+let inline vector (i,j,k) = { I = i; J = j; K = k }
 
 /// Represents a 3D point
-[<CustomEquality; NoComparison>]
+[<Struct; CustomEquality; NoComparison>]
 type Point<[<Measure>] 'Unit> = { X: float<'Unit>; Y: float<'Unit>; Z: float<'Unit> } with
 
     /// Maps the operation to each element of the vector
@@ -156,7 +156,7 @@ type Point<[<Measure>] 'Unit> = { X: float<'Unit>; Y: float<'Unit>; Z: float<'Un
 let pointu<[<Measure>] 'Unit> (x, y, z) = Point<'Unit>.mapElementwise castFloatUnit<'Unit> { X = x; Y = y; Z = z }
 
 /// Convenience function for creating a Point record from floats with no units of measure
-let point ((x, y, z): float<'Unit> * float<'Unit> * float<'Unit>) = { X = x; Y = y; Z = z }
+let inline point ((x, y, z): float<'Unit> * float<'Unit> * float<'Unit>) = { X = x; Y = y; Z = z }
 
 /// Converts a point from the old units to the new units
 let convertPointUnits<[<Measure>] 'OldUnit, [<Measure>] 'NewUnit>

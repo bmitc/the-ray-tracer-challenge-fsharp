@@ -28,6 +28,7 @@ open Matrix
 *)
 
 /// Represents an axis in 3D space
+[<Struct>]
 type Axis =
     /// X-axis
     | X
@@ -37,6 +38,7 @@ type Axis =
     | Z
 
 /// Represents a shear component that can be applied in a shear transformation
+[<Struct>]
 type ShearComponent =
     /// X in proportion to Y
     | Xy
@@ -134,19 +136,19 @@ let rec inverse transform =
     | Reflection axis        -> Reflection axis
     | Rotation (axis, r)     -> Rotation (axis, -r)
     | Shearing (c, p)        -> Shearing (c, -p)
-    | Combination transforms -> Combination (transforms |> List.rev |> List.map (fun t -> inverse t))
+    | Combination transforms -> Combination (transforms |> List.rev |> List.map inverse)
     
 /// Applies the transform matrix to a vector or point
 let applyTransformMatrix (transformMatrix: Matrix) (tuple: ITuple<'T, _>) =
     matrixTimesTuple transformMatrix tuple
 
 /// Applies the transform to a vector or point
-let applyTransform transform (tuple : ITuple<'T, _>) =
+let applyTransform transform (tuple: ITuple<'T, 'Unit>) =
     let matrix = getTransformMatrix transform
     applyTransformMatrix matrix tuple
     
 /// Applies the transpose of the transform to a vector or point
-let applyTransposedTransform transform (tuple : ITuple<'T, _>) =
+let applyTransposedTransform transform (tuple: ITuple<'T, 'Unit>) =
     let matrix = getTransformMatrix transform
     let transposedMatrix = matrix.ReplaceSubmatrix(3, 3, matrix.GetSubmatrix(3, 3).Transpose())
     applyTransformMatrix transposedMatrix tuple

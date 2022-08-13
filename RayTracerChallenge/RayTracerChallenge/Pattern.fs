@@ -8,6 +8,7 @@ open Color
 open Transformation
 
 /// Represents a pair of colors
+[<Struct>]
 type ColorPair =
     { ColorA: Color
       ColorB: Color }

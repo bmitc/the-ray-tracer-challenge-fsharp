@@ -7,6 +7,7 @@ open Transformation
 open Object
 
 /// A ray starting at an origin and pointing in a direction
+[<Struct>]
 type Ray<[<Measure>] 'PointUnit> =
     { /// The point where the ray emanates from
       Origin    : Point<'PointUnit>
@@ -14,12 +15,13 @@ type Ray<[<Measure>] 'PointUnit> =
       Direction : Vector }
 
 /// Convience function for creating a ray record
-let ray origin direction = { Origin = origin; Direction = direction}
+let inline ray origin direction = { Origin = origin; Direction = direction}
 
 /// Calculates the position along a ray at the given time by parameterizing the ray
 let position ray (time: float) = ray.Origin + time * ray.Direction
 
 /// An intersection consists of what object was intersected and at what time along a ray
+[<Struct>]
 type Intersection =
     { /// The object that was intersected by a ray
       Object : Object
@@ -28,7 +30,7 @@ type Intersection =
 
 /// Transforms a ray by transforming the underlying origin point and direction vector
 let transform transform ray =
-    { Origin = applyTransform transform ray.Origin;
+    { Origin    = applyTransform transform ray.Origin;
       Direction = applyTransform transform ray.Direction }
 
 /// Transforms the given ray in world space into the object's local space, using the object's transform

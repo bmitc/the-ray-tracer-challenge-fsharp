@@ -9,7 +9,7 @@ open Utilities
 /// various values that a color component may take on are allowed to range beyond 0.0
 /// and 1.0, which is for calculations.
 [<StructuredFormatDisplay("rgb=({Red}, {Green}, {Blue})")>]
-[<CustomEquality; CustomComparison>]
+[<Struct; CustomEquality; CustomComparison>]
 type Color = { Red: float; Green: float; Blue: float } with
 
     /// Maps the operation to each element of the color
@@ -72,7 +72,7 @@ type Color = { Red: float; Green: float; Blue: float } with
             | _ -> 0
 
 /// Convenience function for creating a Color record
-let color (r, g, b) = { Red = r; Green = g; Blue = b }
+let inline color (r, g, b) = { Red = r; Green = g; Blue = b }
 
 /// Computes the Hadamard (or Schur) product of the colors
 let hadamardProduct c1 c2 =

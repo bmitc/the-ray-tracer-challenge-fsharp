@@ -161,20 +161,26 @@ let ``The pixel size for a vertical canvas`` () =
 [<Fact>]
 let ``Constructing a ray through the center of the canvas`` () =
     let c = camera(201<pixels>, 101<pixels>, pi/2.0)
-    let r = rayForPixel c 100.0<pixels> 50.0<pixels>
+    let cameraTransformMatrix = c.Transform.Invert()
+    let origin = applyTransformMatrix cameraTransformMatrix (pointu<world>(0, 0, 0))
+    let r = rayForPixel origin cameraTransformMatrix c 100.0<pixels> 50.0<pixels>
     (r.Origin, r.Direction) |> should equal (point(0.0, 0.0, 0.0), vector(0.0, 0.0, -1.0))
 
 [<Fact>]
 let ``Constructing a ray through a corner of the canvas`` () =
     let c = camera(201<pixels>, 101<pixels>, pi/2.0)
-    let r = rayForPixel c 0.0<pixels> 0.0<pixels>
+    let cameraTransformMatrix = c.Transform.Invert()
+    let origin = applyTransformMatrix cameraTransformMatrix (pointu<world>(0, 0, 0))
+    let r = rayForPixel origin cameraTransformMatrix c 0.0<pixels> 0.0<pixels>
     (r.Origin, r.Direction) |> should equal (point(0.0, 0.0, 0.0), vector(0.66519, 0.33259, -0.66851))
 
 [<Fact>]
 let ``Constructing a ray when the camera is transformed`` () =
     let c = {camera(201<pixels>, 101<pixels>, pi/2.0)
              with Transform = getTransformMatrix (Combination [Rotation(Y, pi/4.0); Translation(0.0, -2.0, 5.0)])}
-    let r = rayForPixel c 100.0<pixels> 50.0<pixels>
+    let cameraTransformMatrix = c.Transform.Invert()
+    let origin = applyTransformMatrix cameraTransformMatrix (pointu<world>(0, 0, 0))
+    let r = rayForPixel origin cameraTransformMatrix c 100.0<pixels> 50.0<pixels>
     (r.Origin, r.Direction) |> should equal (point(0.0, 2.0, -5.0), vector(sqrt(2.0)/2.0, 0.0, -sqrt(2.0)/2.0))
 
 [<Fact>]

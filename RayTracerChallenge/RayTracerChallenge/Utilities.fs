@@ -61,7 +61,7 @@ let epsilonWorld = epsilon * 1.0<world>
 /// Compares the two floats to see if they are epsilon away from each other.
 /// See the definition of epsilon to see the resolution of the compare.
 /// Units of measure are ignored.
-let compareFloat (x: float<'u>) (y: float<'u>) =
+let inline compareFloat (x: float<'u>) (y: float<'u>) =
     abs(removeUnits(x) - removeUnits(y)) <= epsilon
 
 /// Rounds the given float to the nearest integer and converts to an int
@@ -69,10 +69,10 @@ let inline roundToInt x = int (round x)
 
 /// Calculates the reciprocal of the float. If the input is close, to within
 /// epsilon, of 0.0, then this function returns 0.0. See the definition of epsilon.
-let reciprocal x =
-    match x with
-    | x when (compareFloat x 0.0) -> 0.0
-    | _                           -> 1.0/x
+let inline reciprocal x =
+    if compareFloat x 0.0
+    then 0.0
+    else 1.0/x
 
 /// An active pattern for matching an integer to know when it's odd or even
 let (|Even|Odd|) input = if input % 2 = 0 then Even else Odd
@@ -84,7 +84,7 @@ let inline convert1DIndexTo2DIndex index width = (index % width, index / width)
 let inline convert2DIndexTo1DIndex x y width = x + y * width
 
 /// Returns the floor of the given float converted to an integer
-let floorInt (x: float<'Unit>) =
+let inline floorInt (x: float<'Unit>) =
     x
     |> removeUnits
     |> floor

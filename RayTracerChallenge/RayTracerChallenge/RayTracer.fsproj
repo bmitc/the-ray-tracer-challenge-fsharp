@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="scripts\load.fsx" />
     <None Include="scripts\projectile.fsx" />
     <None Include="scripts\clock.fsx" />

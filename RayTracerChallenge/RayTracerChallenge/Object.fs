@@ -7,6 +7,7 @@ open Transformation
 open Pattern
 
 /// Represents various types of shapes to be ray traced
+[<Struct>]
 type Shape =
     /// An abstract sphere. The size and location of the sphere is adjusted by applying transformations.
     | Sphere
@@ -14,6 +15,7 @@ type Shape =
     | PlaneXZ
 
 /// A record to hold various material properties
+[<Struct>]
 type Material =
     { /// The color of the material
       Color     : Color
@@ -41,6 +43,7 @@ type Material =
                                   Pattern   = None }
 
 /// An object is a shape with a possible transform and material assigned to it
+[<Struct>]
 type Object =
     { /// The shape that represents the object
       Shape     : Shape

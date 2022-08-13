@@ -11,6 +11,7 @@ open Ray
 open LightAndShading
 
 /// Represents a world, consisting of objects and a light source
+[<Struct>]
 type World<[<Measure>] 'PointUnit> =
     { /// Collection of objects contained in the world
       Objects     : Object list
@@ -49,6 +50,7 @@ let isShadowed world (point: Point<world>) =
 
 /// Represents precomputated values of an intersection, capturing the time and
 /// object of the intersection
+[<Struct>]
 type Computation<[<Measure>] 'PointUnit> =
     { /// Time of the intersection
       Time      : float
@@ -67,12 +69,12 @@ type Computation<[<Measure>] 'PointUnit> =
 
 /// Prepares a Computation relating to the intersection
 let prepareComputation (intersection: Intersection) ray =
-    let time = intersection.Time
-    let object = intersection.Object
-    let point = position ray time
-    let eye = -ray.Direction
-    let normal = normalAt object point
-    let d = dot normal eye
+    let time    = intersection.Time
+    let object  = intersection.Object
+    let point   = position ray time
+    let eye     = -ray.Direction
+    let normal  = normalAt object point
+    let d       = dot normal eye
     let computationNormal = if d < 0.0 then -normal else normal
     { Time      = time
       Object    = object
@@ -101,8 +103,9 @@ let shadeHit world (computation: Computation<world>) =
 /// with an object in the world. In the event of no intersection,
 /// black is returned.
 let colorAt world ray =
-    match hit(intersectWorld world ray) with
-    | Some i -> prepareComputation i ray |> shadeHit world
+    match hit (intersectWorld world ray) with
+    | Some i -> prepareComputation i ray
+                |> shadeHit world
     | None   -> black
 
 /// <summary>
@@ -114,8 +117,8 @@ let colorAt world ray =
 /// <returns>A transformation matrix used to orient the eye in the world.</returns>
 let viewTransform from toward up =
     let forward = normalize (toward - from)
-    let left = crossProduct forward (normalize up)
-    let trueUp = crossProduct left forward
+    let left    = crossProduct forward (normalize up)
+    let trueUp  = crossProduct left forward
     let orientation = Matrix(4, 4, array2D [[    left.I;     left.J;     left.K; 0.0];
                                             [  trueUp.I;   trueUp.J;   trueUp.K; 0.0];
                                             [-forward.I; -forward.J; -forward.K; 0.0];
@@ -124,6 +127,7 @@ let viewTransform from toward up =
     orientation * translationMatrix
 
 /// Represents a camera as a canvas one pixel in front of the camera
+[<Struct>]
 type Camera =
     { /// Horizontal size in pixels of the canvas that the picture will be rendered to
       HorizontalSize : int<pixels>
@@ -175,9 +179,8 @@ let camera (horizontalPixels, verticalPixels, fieldOfView) =
                           VerticalSize   = verticalPixels;
                           FieldOfView    = fieldOfView }
 
-/// Ray that emanates from the camera and passes through the (x,y) pixel on
-/// the camera's canvas
-let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
+/// Ray that emanates from the camera and passes through the (x,y) pixel on the camera's canvas
+let rayForPixel origin cameraTransformMatrix (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
     // The offset from the edge of the canvas to the pixel's center
     let xOffset = (x + 0.5<pixels>) * camera.PixelSize
     let yOffset = (y + 0.5<pixels>) * camera.PixelSize
@@ -190,14 +193,21 @@ let rayForPixel (camera: Camera) (x: float<pixels>) (y: float<pixels>) =
     // Using the camera matrix, transform the canvas point and the origin,
     // and then compute the ray's direction vector.
     // (Remember that the canvas is at z=-1.)
-    let transformMatrix = camera.Transform.Invert()
-    let pixel = applyTransformMatrix transformMatrix (point(worldX, worldY, -1.0<world>))
-    let origin = applyTransformMatrix transformMatrix (pointu<world>(0.0, 0.0, 0.0))
-    let direction = normalize(pixel - origin)
+    //let transformMatrix = camera.Transform.Invert()
+    let pixel = applyTransformMatrix cameraTransformMatrix (point(worldX, worldY, -1.0<world>))
+    //let origin = applyTransformMatrix transformMatrix (pointu<world>(0.0, 0.0, 0.0))
+    let direction = normalize (pixel - origin)
 
     ray origin direction
 
 /// Render a world onto a canvas using the camera
 let render camera world =
+    // Create a canvas that the camera will image upon
     let image = Canvas(camera.HorizontalSize, camera.VerticalSize)
-    image.UpdatePixels(fun x y _color -> colorAt world (rayForPixel camera (floatUnits<pixels> x) (floatUnits<pixels> y)))
+
+    // Pre-compute the camera's transform matrix and world origin, which will not change during the render
+    let cameraTransformMatrix = camera.Transform.Invert()
+    let origin = applyTransformMatrix cameraTransformMatrix (pointu<world>(0, 0, 0))
+
+    // Compute the color for every pixel, in parallel
+    image.UpdatePixels(fun x y _color -> colorAt world (rayForPixel origin cameraTransformMatrix camera (floatUnits<pixels> x) (floatUnits<pixels> y)))

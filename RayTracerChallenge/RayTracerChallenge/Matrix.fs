@@ -136,7 +136,7 @@ type Matrix(n: int, m: int, elements: float[,]) =
     /// Multiplies two matrices and returns a new matrix
     static member ( * ) (m1: Matrix, m2: Matrix) =
         let newElements = array2D [| for i in 0..m1.N-1 ->
-                                        [| for j in 0..m2.M-1 -> dotArray m1.[i,*] m2.[*,j] |] |]
+                                         [| for j in 0..m2.M-1 -> dotArray m1.[i,*] m2.[*,j] |] |]
         Matrix(m1.N, m2.M, newElements)
 
     /// Multiplies a matrix by a constant element-wise and returns a new matrix
@@ -146,7 +146,7 @@ type Matrix(n: int, m: int, elements: float[,]) =
     /// Adds two matrices together and returns a new matrix
     static member ( + ) (m1: Matrix, m2: Matrix) =
         let newElements = array2D [| for i in 0..m1.N-1 ->
-                                      Array.map2 (fun x y -> x + y) m1.[i,*] m2.[i,*] |]
+                                         Array.map2 (fun x y -> x + y) m1.[i,*] m2.[i,*] |]
         Matrix(m1.N, m2.M, newElements)
 
     /// Adds a constant element-wise to a matrix and returns a new matrix
@@ -177,7 +177,7 @@ type Matrix(n: int, m: int, elements: float[,]) =
     member this.Determinant () =
         match this.N, this.M with
         | 2, 2          -> this.[0,0] * this.[1,1] - this.[0,1] * this.[1,0]
-        | n, m when n=m -> this.[0,*] |> Array.mapi (fun i x -> x * this.Cofactor(0,i)) |> Array.sum
+        | n, m when n=m -> this.[0,*] |> Array.Parallel.mapi (fun i x -> x * this.Cofactor(0,i)) |> Array.sum
         | _             -> raise (InvalidDimension {| Row = n; Column = m;
                                                       Message = "Determinants are only supported for square matrices." |})
     
@@ -224,8 +224,11 @@ type Matrix(n: int, m: int, elements: float[,]) =
     /// Inverts the matrix
     member this.Invert() =
         let determinant = this.Determinant()
-        let elements = this.GetElements |> Array2D.mapi (fun i j _ -> this.Cofactor(i,j) / determinant)
-        Matrix(this.N, this.M, elements |> Seq.cast<float>, ByColumn) // effectively takes the transpose
+        let elements =
+            this.GetElements
+            |> Array2D.mapi (fun i j _ -> this.Cofactor(i,j) / determinant)
+            |> Seq.cast<float>
+        Matrix(this.N, this.M, elements, ByColumn) // effectively takes the transpose
 
 /// Multiples a tuple by a matrix and returns a value of the underlying tuple type, such as vector or point
 let matrixTimesTuple (m: Matrix) (tuple: ITuple<'T, 'Unit>) : 'T =

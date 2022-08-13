@@ -32,7 +32,7 @@ let compute x y =
     | Some i -> let point = position r i.Time
                 let normal = normalAt i.Object point
                 let eye = -r.Direction
-                lighting m light point eye normal false
+                lighting m sphere light point eye normal false
     | None   -> black
 
 #time

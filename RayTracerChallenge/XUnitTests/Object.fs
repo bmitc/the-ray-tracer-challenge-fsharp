@@ -145,3 +145,7 @@ let ``The normal of a scaled plane remains unchanged`` () =
 let ``The normal of a translated plane remains unchanged`` () =
     let point = pointu<world>(0.0, 0.0, 0.0)
     normalAt {plane with Transform = Some(Translation (0.0, 2.0, 0.0))} point |> should equal (vector(0.0, 1.0, 0.0))
+
+[<Fact>]
+let ``Reflectivity for the default material`` () =
+    Material.Default.Reflective |> should equal 0.0

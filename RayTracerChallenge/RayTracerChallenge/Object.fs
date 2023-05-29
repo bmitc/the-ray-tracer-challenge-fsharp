@@ -18,29 +18,33 @@ type Shape =
 [<Struct>]
 type Material =
     { /// The color of the material
-      Color     : Color
+      Color      : Color
       /// Background lighting, or light reflected from other objects in the environment.
       /// Typical values range between 0 and 1.
-      Ambient   : float
+      Ambient    : float
       /// Light reflected from a matte surface. Typical values range between 0 and 1.
-      Diffuse   : float
+      Diffuse    : float
       /// Reflection of the light source itself and results in what is called a specular highlight,
       /// the bright spot on a curved surface. Typical values range between 0 and 1.
-      Specular  : float
+      Specular   : float
       /// Controls the effect of the specular reflection. The higher the shininess, the smaller and
       /// tighter the specular highlight. Typical values range between 10 (very large highlight) and
       /// 200 (very small highlight).
-      Shininess : float
+      Shininess  : float
       /// The optional pattern that is applied to the material. If a pattern is supplied, it takes
       /// precedence over the material's color.
-      Pattern   : Pattern option }
+      Pattern    : Pattern option
+      /// Controls the reflectivity of the material. A value of 0.0 is completely nonreflective, and
+      /// a value of 1.0 is a perfect mirror.
+      Reflective : float }
     with
-        static member Default = { Color     = color(1.0, 1.0, 1.0)
-                                  Ambient   = 0.1
-                                  Diffuse   = 0.9
-                                  Specular  = 0.9
-                                  Shininess = 200.0
-                                  Pattern   = None }
+        static member Default = { Color      = color(1.0, 1.0, 1.0)
+                                  Ambient    = 0.1
+                                  Diffuse    = 0.9
+                                  Specular   = 0.9
+                                  Shininess  = 200.0
+                                  Pattern    = None
+                                  Reflective = 0.0}
 
 /// An object is a shape with a possible transform and material assigned to it
 [<Struct>]

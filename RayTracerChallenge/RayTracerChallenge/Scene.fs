@@ -53,36 +53,38 @@ let isShadowed world (point: Point<world>) =
 [<Struct>]
 type Computation<[<Measure>] 'PointUnit> =
     { /// Time of the intersection
-      Time      : float
+      Time       : float
       /// The intersection object
-      Object    : Object
+      Object     : Object
       /// The point, in world space, where the intersection occurred
-      Point     : Point<'PointUnit>
+      Point      : Point<'PointUnit>
       /// The point with a z component slightly less than z=0
-      OverPoint : Point<'PointUnit>
+      OverPoint  : Point<'PointUnit>
       /// Vector pointing back towards the camera, or eye
-      Eye       : Vector
+      Eye        : Vector
       /// Normal at the intersection point and object's surface
-      Normal    : Vector
+      Normal     : Vector
       /// Describes if a hit occurs on the inside of the object's shape
-      Inside    : bool }
+      Inside     : bool
+      Reflection : Vector}
 
 /// Prepares a Computation relating to the intersection
 let prepareComputation (intersection: Intersection) ray =
-    let time    = intersection.Time
-    let object  = intersection.Object
-    let point   = position ray time
-    let eye     = -ray.Direction
-    let normal  = normalAt object point
-    let d       = dot normal eye
+    let time     = intersection.Time
+    let object   = intersection.Object
+    let point    = position ray time
+    let eye      = -ray.Direction
+    let normal   = normalAt object point
+    let d        = dot normal eye
     let computationNormal = if d < 0.0 then -normal else normal
-    { Time      = time
-      Object    = object
-      Point     = point
-      OverPoint = point + epsilon * computationNormal
-      Eye       = eye
-      Normal    = computationNormal
-      Inside    = d < 0.0 }
+    { Time       = time
+      Object     = object
+      Point      = point
+      OverPoint  = point + epsilon * computationNormal
+      Eye        = eye
+      Normal     = computationNormal
+      Inside     = d < 0.0
+      Reflection = Tuples.reflect ray.Direction computationNormal }
 
 /// Shades the world at a given intersection
 let shadeHit world (computation: Computation<world>) =
@@ -108,6 +110,15 @@ let colorAt world ray =
                 |> shadeHit world
     | None   -> black
 
+let reflectedColor world (computation: Computation<world>) =
+    match computation.Object.Material with
+    | Some m when not (compareToZero m.Reflective) ->
+        let reflectionRay = ray computation.OverPoint computation.Reflection
+        let color = colorAt world reflectionRay
+        m.Reflective * color
+    | Some _ -> black
+    | None   -> black
+        
 /// <summary>
 /// Returns a transformation matrix that orients the eye to the world.
 /// </summary>

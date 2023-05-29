@@ -237,3 +237,37 @@ let ``The hit should offset the point`` () =
     let comps = prepareComputation i r
     comps.OverPoint.Z |> should lessThan (-epsilonWorld/2.0)
     comps.Point.Z |> should greaterThan comps.OverPoint.Z
+
+[<Fact>]
+let ``Precomputing the reflection vector`` () =
+    let shape = plane
+    let r = ray (pointu<world>(0, 1, -1)) (vector(0, -sqrt(2.0)/2.0, sqrt(2.0)/2.0))
+    let i = { Object = shape; Time = sqrt(2.0) }
+    let comps = prepareComputation i r
+    comps.Reflection |> should equal (vector(0, sqrt(2.0)/2.0, sqrt(2.0)/2.0))
+
+[<Fact>]
+let ``The reflected color for a nonreflective material`` () =
+    let w =
+        let light = {Position = pointu<world>(-10.0, 10.0, -10.0); Intensity = color(1.0, 1.0, 1.0)}
+        let m = {Material.Default with Color = color(0.8, 1.0, 0.6); Diffuse = 0.7; Specular = 0.2}
+        let t = Scaling(0.5, 0.5, 0.5)
+        let s1 = {sphere with Material = Some m}
+        let s2 = {sphere with Transform = Some t; Material = Some {Material.Default with Ambient = 1.0}}
+        { Objects = [s1; s2]; LightSource = light }
+    let r = ray (pointu<world>(0, 0, 0)) (vector(0, 0, 1))
+    let i = { Object = w.Objects[1]; Time = 1 }
+    let comps = prepareComputation i r
+    let color = reflectedColor w comps
+    color |> should equal black
+
+[<Fact>]
+let ``The reflected color for a reflective material`` () =
+    let w = defaultWorld()
+    let shape = { plane with Material = Some {Material.Default with Reflective = 0.5}
+                             Transform = Some (Translation (0, -1, 0)) }
+    let w = { w with Objects = w.Objects @ [shape] }
+    let r = ray (pointu<world>(0, 0, -3)) (vector(0, -sqrt(2.0)/2.0, sqrt(2.0)/2.0))
+    let i = { Object = shape; Time = sqrt 2.0 }
+    let comps = prepareComputation i r
+    reflectedColor w comps |> should equal (color(0.19033, 0.23791, 0.14275))

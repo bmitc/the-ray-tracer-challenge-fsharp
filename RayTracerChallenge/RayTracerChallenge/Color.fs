@@ -9,7 +9,7 @@ open Utilities
 /// various values that a color component may take on are allowed to range beyond 0.0
 /// and 1.0, which is for calculations.
 [<StructuredFormatDisplay("rgb=({Red}, {Green}, {Blue})")>]
-[<Struct; CustomEquality; CustomComparison>]
+[<Struct; CustomEquality; NoComparison>]
 type Color = { Red: float; Green: float; Blue: float } with
 
     /// Maps the operation to each element of the color
@@ -49,27 +49,15 @@ type Color = { Red: float; Green: float; Blue: float } with
     static member ( ~- ) (c: Color) = -1.0 * c
 
     /// Overrides the Object.Equals method to provide a custom equality compare for Color records
-    override x.Equals object =
+    override this.Equals object =
         match object with
-        | :? Color as color -> compareFloat x.Red color.Red &&
-                               compareFloat x.Green color.Green &&
-                               compareFloat x.Blue color.Blue
+        | :? Color as color -> compareFloat this.Red   color.Red   &&
+                               compareFloat this.Green color.Green &&
+                               compareFloat this.Blue  color.Blue
         | _ -> false
 
     /// Overrides the Object.GetHashCode method, which is recommended when overriding Object.Equals
     override x.GetHashCode() = hash x // Re-use the built-in hash for records
-
-    // Implements a custom comparison method, using the Utilities.compareFloat function
-    // for the Color floats
-    interface System.IComparable with
-        member x.CompareTo y =
-            match y with
-            | :? Color as c -> [x.Red.CompareTo c.Red; x.Green.CompareTo c.Green; x.Blue.CompareTo c.Blue]
-                               |> List.tryFind (fun result -> result <> 0)
-                               |> function
-                                   | Some x -> x
-                                   | None   -> 0
-            | _ -> 0
 
 /// Convenience function for creating a Color record
 let inline color (r, g, b) = { Red = r; Green = g; Blue = b }

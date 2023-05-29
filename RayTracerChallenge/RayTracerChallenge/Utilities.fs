@@ -64,6 +64,11 @@ let epsilonWorld = epsilon * 1.0<world>
 let inline compareFloat (x: float<'u>) (y: float<'u>) =
     abs(removeUnits(x) - removeUnits(y)) <= epsilon
 
+/// Compares the float to see if it is within epsilon of 0.0.
+/// See the definition of epsilon to see the resolution of the compare.
+/// Units of measure are ignored.
+let inline compareToZero (x: float<'u>) = compareFloat x 0.0<_>
+
 /// Rounds the given float to the nearest integer and converts to an int
 let inline roundToInt x = int (round x)
 
